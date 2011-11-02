@@ -1,0 +1,210 @@
+        ========================================
+            Xen
+        ========================================
+
+# $Id: xen 1255 2010-04-01 10:14:27Z ffjia $
+
+Xen 3.0 Setup
+=============
+
+# gcc, make, python (> 2.2), python-dev, iproute, bridge-utils
+# hotplug FIXME, zlib1g-dev, libncurses5-dev, tetex-bin, gs-common, fig2ps
+
+# Install binary tarball
+1. sudo sh ./install.sh
+2. sudo mv /lib/tls /lib/tls.disabled
+3. $ sudo depmod 2.6.16-xen
+4. $ cd /boot && sudo mkinitramfs -k -o initrd-2.6.16-xen 2.6.16-xen
+5. Edit menu.lst file
+
+    title       Xen v3.0 - Linux 2.6.16-xen
+    root        (hd0,0)
+    kernel      /xen-3.gz dom0_mem=65536
+    module      /vmlinuz-2.6.16-xen root=/dev/hda6 ro console=tty0
+    module      /initrd-2.6.16-xen
+    boot
+
+6. $ sudo update-rc.d xend defaults
+   $ sudo update-rc.d xendomains defaults
+
+
+virt-install
+=============
+
+    # Windows in CentOS5
+    $ virt-install -n win2k3 --hvm -r 512 --vnc -f /var/lib/xen/images/win2k3.img -s 10 -c /root/Win2K3_SP2_20070828_Fix.iso
+
+    # Paravirtualized Solaris
+    $ virt-install -n domu-x17 \
+      --nographics -p \
+      -f /xen2/nv76.img -s 20 \
+      -l /net/netinstall-sca11/export/XenDomU/x_iso/nv_76/nv_76.iso \
+      -r 1280
+
+    # RHEL5 with interactive process
+    $ virt-install -p -x ks=nfs:kickstart01:/kickstart/kscfgs/RHEL5-xen.cfg -l nfs:kickstart01:/kickstart/install/rhel5
+
+    $ virt-install --paravirt --name vm --ram 2048 --disk path=/path/vm.img,size=100 --nographics --location=http://your_host/yum --force
+
+
+Install guest with anaconda
+===========================
+
+    Installation must be a network type. It is not possible to install from a
+    local disk or CDROM. It is possible, however, to set up an installation
+    tree on the host OS and then export it as an NFS share.
+
+Modify DomU image
+=================
+
+    (1) Keep the disk mapped as xvda on domU config file.
+    (2) assign /var/lib/xen/images/CLOUD-CC-1.img to a loopback device,
+    and use kpartx on it (something like "LOOP=`losetup -f`;losetup $LOOP
+    /var/lib/xen/images/CLOUD-CC-1.img;kpartx -av $LOOP")
+    (3) run "fdisk -l $LOOP"
+    (4) mount the partition on domU (something like "mount
+    /dev/mapper/loop0p5 /mnt/tmp")
+    (5) ls -la /mnt/tmp /mnt/tmp/boot/grub/menu.lst (or whatever your
+    mount point is)
+    (6) paste the content of menu.lst (relevant parts only, no need to
+    paste commented entries)
+    (7) run "/usr/bin/pygrub -i /var/lib/xen/images/CLOUD-CC-1.img"
+
+    Don't forget to umount all the disk images after these tests (umount,
+    kpartx -dv, losetup -d). Forgetting that can lead to data corruption.
+
+
+Modify DomU time
+================
+
+    $ echo "xen.independent_wallclock = 1" >> /etc/sysctl.conf
+    $ sysctl -p
+
+
+#xen on freenode
+=================
+
+    # Why cannot access windows using "xm console"
+    <icarus901> because the console is essentially emulated serial, text only
+
+    # Hvm
+    <icarus901> Deep6, hvm is fully virtualized (requires the virtualzation
+    processor support). it uses qemu to emulate bios, devices, etc. in your
+    domU config it should say that the kernel is hvmloader)
+
+    # Pass kernel paremeter
+    <icarus901> xm create thevm.conf extra=" -s "  or extra=" single"
+
+
+Domain Configuration
+====================
+
+* Networking scripts
+
+    dom0: fake eth0 -> vif0.0 -+
+                               |
+                             bridge -> real eth0 -> the network
+                               |
+    domU: fake eth0 -> vifN.0 -+
+
+* Set domu mac address
+
+    $ printf "00:16:3e:%02x:%02x:%02x\n" {B,C,D}
+
+
+Xen 3.0 Architecture
+====================
+
+* CPU operations (Intel x86)
+
+    - Non-virtualized system
+
+        + OS executes at ring 0 (most privileged)
+
+        + Applications executes at ring 3
+
+    - Xen para-virtualization
+
+        + VMM executes at ring 0
+
+        + Guest OS executes at ring 1
+
+        + Applications executes at ring 3
+
+* Memory operations
+
+    Guest OSes are responsible for allocating and managing page tables
+
+* I/O operations
+
+    I/O data to and from guest OS is transferred using shared-memory
+    ring architecture
+
+
+Intel Virtualization Technology
+===============================
+
+* IVT places the VMM one level below ring 0, allowing the VMs to execute
+  in ring 0
+
+* Processor-level support for virtualization allows Xen 3.0 to support
+  an OS whose source code cannot be modified.
+
+
+Intel-VT(vmx)/AMD-V(svm)
+=======================
+
+* BIOS
+
+    # On domO
+    $ cat /sys/hypervisor/properties/capabilities
+    xen-3.0-x86_32p hvm-3.0-x86_32 hvm-3.0-x86_32p
+
+
+Virtual Split Drivers
+=====================
+
+The idea behind split devices is safe hardware isolation. Domain 0 is the only
+one that has direct access to the hardware devices, and it uses the original
+Linux drivers.
+
+KVM
+===
+
+    * KVM uses the standard kernel
+
+      Xen runs as a hypervisor that requires a modified kernel underneath.
+      Since it runs a (somewhat) non-standard kernel, it can lead to
+      compatibility problems, especially for anything that has to call into,
+      or use, the BIOS. For example, power management has had problems working
+      under Xen, and console redirection and handling was often an interesting
+      exercise., as anyone who’s used a serial console will tell you. By using
+      the standard kernel, KVM allows full hardware compatibility–whatever
+      works in the standard kernel, works in your virtualized host.
+
+    * KVM is in the upstream kernel
+
+      KVM has been accepted into the upstream Linux kernel. This is a great
+      step for virtualization, in that it will now always be available, and
+      won’t need continual porting to newer kernels. As anyone who has
+      followed Fedora knows, attempting to maintain the Xen kernel patchset
+      against the upstream kernel is a large amount of work. Working in the
+      upstream obviates the need for that effort, allowing work to be done on
+      improving the virtualization experience rather than chasing the kernel
+      of the day.
+
+
+Related Links
+=============
+
+http://www.option-c.com/xwiki/XenLvmDrbd
+http://www.debian-administration.org/articles/304
+http://www.howtoforge.com/perfect_xen_setup_debian_ubuntu
+http://cropcrusher.web.infoseek.co.jp/shufuden/winxen/index.html
+http://blogs.sun.com/shalon/entry/virt_install_demo
+http://virt-manager.et.redhat.com/page/Main_Page
+http://fedoraproject.org/wiki/Tools/Xen?highlight=%28%28FedoraXenQuickstartFC6%29%29
+http://wiki.xensource.com/xenwiki/XenNetworking
+http://www.howtoforge.com/using-xen-with-lvm-based-vms-instead-of-image-based-vms-debian-etch
+http://blog.codemonkey.ws/2008/05/truth-about-kvm-and-xen.html
+http://www.ibm.com/developerworks/cn/linux/l-cn-kvm/index.html?ca=drs-cn-0730

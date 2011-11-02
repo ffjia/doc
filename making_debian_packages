@@ -1,0 +1,331 @@
+        ========================================
+            Making Debian Packages
+        ========================================
+
+# $Id: making_debian_packages 984 2008-11-11 09:53:50Z ffjia $
+
+Maintainer's Packages
+=====================
+
+    build-essential (dpkg-dev)
+    devscripts
+    debhelper dh-make (obsolete) cdbs
+    diff patch dpatch
+    gnupg
+    fakeroot
+    lintian
+    pbuilder
+    equivs (depends on devscripts fakeroot)
+
+    maint-guide debian-policy
+
+    dh-make-perl
+
+        $ dh-make-perl --build --install --cpan <MODULENAME>
+
+
+Debian Policy
+=============
+
+* Conflicts
+
+    A special exception is made for packages which declare a conflict
+    with their own package name, or with a virtual package which they
+    provide (see below): this does not prevent their installation, and
+    allows a package to conflict with others providing a replacement for
+    it. You use this feature when you want the package in question to be
+    the only package providing some feature.
+
+* Replaces
+
+    Replaces allows the packaging system to resolve which package should
+    be removed when there is a conflict - see Conflicting binary
+    packages - Conflicts, Section 7.3. This usage only takes effect when
+    the two packages do conflict, so that the two usages of this field
+    do not interfere with each other.
+
+    In this situation, the package declared as being replaced can be a
+    virtual package, so for example, all mail transport agents (MTAs)
+    would have the following fields in their control files:
+
+         Provides: mail-transport-agent
+         Conflicts: mail-transport-agent
+         Replaces: mail-transport-agent
+
+    ensuring that only one MTA can be installed at any one time.
+
+
+* Dependency
+
+    Package dependencies only affect postinst scripts. They don't affect
+    preinst scripts or debconf config scripts; preinst script
+    dependencies must be enforced with pre-dependencies, and config
+    scripts must be resilient against being called before dependencies
+    are installed because there is no package relationship that can be
+    declared for config scripts.
+
+
+* Recommends and Suggests
+
+    What's the difference between "Recommends" and "Suggests," anyway?
+    Any packages that you should probably have, but are not absolutely
+    required, belong in the "Recommends" field. According to the policy
+    manual, "list packages that would be found together with this one in
+    all but unusual installations." Packages that are likely to be
+    useful but aren't in any way required should be listed in the
+    "Suggests" field.
+
+
+Personal Builder
+================
+
+* Install and configure pbuilder environment
+
+    $ sudo pbuilder create --distribution <DISTRO> \
+    --othermirror "deb http://archive.ubuntu.com/ubuntu <DISTRO> universe multiverse"
+
+
+* Use pbuilder to build binary packages
+
+    # The resulting .debs and source packages can be found in
+    # /var/cache/pbuilder/result/ (which can be changed with the
+    # --buildresult flag).
+    $ sudo pbuilder build *.dsc
+
+
+* Update pbuilder
+
+    $ sudo pbuilder update
+
+
+* Upgrade pbuilder to new release
+
+    $ sudo pbuilder update --distribution <NEWDISTRO> --override-config
+
+
+Useful Tricks
+=============
+
+* Environment variables for debuild
+
+    export DEBEMAIL="user@domain.com"
+    export DEBFULLNAME="Firstname Lastname"
+
+
+* Adding new entry in changelog
+
+    # Date should be in RFC822 format, which can be obtained from the
+    # 822-date program.
+
+    $ dch --create
+    $ dch -i
+
+
+* Cleanup a sourcecode tree
+
+    $ debclean
+
+
+* Also remove all .deb, .changes and .build files
+
+    $ debclean --cleandebs
+
+
+* Check source package for common mistake
+
+    $ cd ..
+    $ lintian -i *.dsc
+
+
+* Test all the packages with lintian
+
+    $ lintian <PACKAGE-VERSION>.changes
+
+
+* Test all the .deb packages with piuparts
+
+    $ piuparts <BINPACKAGE-VERSION>.deb
+
+
+* debian/tmp is only used if debian/compat does not exist or contains '1'.
+
+
+* Finding out which packages your package needs to be built:
+
+    strace -f -o /tmp/log ./configure
+    # or make instead of ./configure, if the package doesn't use autoconf
+    for x in `dpkg -S $(grep open /tmp/log|\
+        perl -pe 's!.* open\(\"([^\"]*).*!$1!' |\
+        grep "^/"| sort | uniq|\
+        grep -v "^\(/tmp\|/dev\|/proc\)" ) 2>/dev/null|\
+        cut -f1 -d":"| sort | uniq`; \
+        do \
+        echo -n "$x (>=" `dpkg -s $x|grep ^Version|cut -f2 -d":"` "), "; \
+    done
+
+
+* To manually find exact build dependency for /usr/bin/foo, you execute
+
+    objdump -p </usr/bin/foo> | grep NEEDED
+    dpkg -S <libfoo.so.1>
+
+
+* Just use the -i option when building your packages and dpkg-source will
+  happily ignore .svn, CVS (and maybe others) directories.
+
+
+* The standard package building scripts in dpkg-dev (and you shouldn't
+  attempt to build Debian packages using anything less, although it's
+  technically possible to put the bytes together in the right order in other
+  ways) require debian/control, debian/changelog, and debian/rules. Debian
+  policy further requires debian/copyright.Depending on the package you're
+  creating, other files may be useful.
+
+
+* I could run dpkg-scanpackages and dpkg-scansources manually, but I wrote a
+  makefile for easier maintenance instead.
+
+    all: Packages.gz Sources.gz
+
+    Packages.gz: override.txt
+    dpkg-scanpackages . override.txt | gzip -9c > Packages.gz
+
+    Sources.gz: override.txt
+    dpkg-scansources . override.txt | gzip -9c > Sources.gz
+
+    .PHONY: clean
+
+    clean:
+    -rm -f Packages.gz Sources.gz
+
+
+* Calculate size
+
+    num=0
+    for i in $(grep ^Size /path/dists/sarge/main/binary-i386/Packages | awk '{print $2}')
+    do
+        num=$((num + i))
+    done
+    echo $((num / (1024 * 1024)))
+
+
+Packaging Theory
+================
+
+* Schematic overview of debuild
+
+    debuild
+      -> dpkg-buildpackage
+           -> debian/control
+           -> debian/changelog
+           -> debian/rules
+                -> original build scripts (./configure, Makefile,...)
+                -> debhelper suite (dh_*)
+      -> lintian or linda
+      -> debsign
+
+
+* Dummy packages and metapackages
+
+    - Dummy packages
+
+    Dummy package is one of those packages used to smooth upgrades. One can
+    safely remove it, and everything is fine.
+
+    - Metapackages
+
+    A metapackage is one of those packages used to pull in other
+    packages. If they are removed, it's likely that something goes
+    wrong. They are used for various reasons, such as ensuring that one
+    out of many versions of a package is installed (like the python
+    modules do) or ensuring that a specific set of functionality is
+    present (like the med-* packages).
+
+    - The solution
+
+    + if you can write "this package can be safely removed", you should
+      call it a 'dummy package'
+    + else, it's probably a metapackage.  Or of course a normal package
+
+
+* Debian install-time configuration
+
+    config and template files which in the control.tar.gz run defore the
+    preinst, and before the package is unpacked!
+
+
+control (from Invader)
+======================
+
+$ aptitude download foo
+下载foo包到当前目录
+$ dpkg --extract foo_version-arch.deb foo
+从下载得到的deb包文件中解出主体内容到foo/目录下
+$ cd foo
+$ dpkg --control ../foo_version-arch.deb
+再解出控制信息
+$ vi DEBIAN/control
+按你的需要修改Depends:域
+若有闲的话还可修改Version:定义的版本号，这可能需要同时修改DEBIAN/changelog等
+$ cd ..
+$ fakeroot dpkg --build foo ./
+这将在./下生成新的deb包
+注意如果新包与原包同名会覆盖后者，所以你可以指定别的目录，比如以/tmp代替./
+# dpkg -i path/to/new_deb_file
+安装修改过的deb包
+
+如果希望在以后的aptitude upgrade中保持该包不被自动升级，aptitude hold foo即可
+
+
+Making Howto
+============
+
+    * Manully packaging example
+
+    1. Here's a simple hello world program:
+
+        #include <stdio.h>
+        int main ()
+        {
+        printf("Hello world!\n");
+        return 0;
+        }
+
+    2. Type it up into a file called hello.c and compile it like this:
+
+        $ gcc -o hello hello.c
+
+    3. Make a directory structure to hold the file and move it there.
+       Then tar it up with the name data.tar.gz
+
+        $ mkdir -p usr/local/bin
+        $ mv hello usr/local/bin
+        $ tar cvzf data.tar.gz ./usr
+
+    4. Create a file called control that looks like this:
+
+        Package: hello-example
+        Description: A quicky and dirty example of a debian package
+
+    5. Now tar it up with the name control.tar.gz
+
+        $ tar cvzf control.tar.gz control
+
+    6. Create a file called debian-binary.
+
+        $ echo 2.0 > debian-binary
+
+    Finally, use ar to bundle up these files into one archive.
+    debian-binary must be the first file in the archive
+
+        $ ar r hello-example.deb debian-binary control.tar.gz data.tar.gz
+
+
+Related Links
+=============
+
+http://lists.debian.org/debian-devel/2005/10/msg01154.html
+http://www.debian.org/doc/manuals/maint-guide/ap-pkg-eg.zh-cn.html
+http://doc.ubuntu.com/ubuntu/packagingguide/C/index.html
+http://matrixhasu.altervista.org/index.php?view=use_dpatch
+http://wiki.debian.org/SecureApt?highlight=(secure)|(apt)

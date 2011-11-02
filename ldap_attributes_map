@@ -1,0 +1,87 @@
+        ========================================
+            LDAP attributes map
+        ========================================
+
+# $Id: ldap_attributes_map 39 2006-11-21 02:01:33Z ffjia $
+
+Outlook Field - LDAP Attribute(s) (1)
+===================================
+
+Summarization
+. Name - cn, display-name
+. E-Mail Address - mail (2)
+. Home Phone - homePhone
+. Pager - officePager, pager (3)
+. Mobile - mobile
+. Personal Web Page
+. Business Phone - telephoneNumber
+. Business FAX - officeFAX, facsimileTelephoneNumber
+. Job Title - title
+. Department - department, organizationUnitName, ou (3)
+. Office - physicalDeliveryOfficeName
+. Company Name - o, organizationName
+. Business Web Page - URL
+
+Name
+. First - givenName
+. Middle - initials
+. Last - sn
+. Title
+. Display - cn, display-name
+. Nickname
+. E-Mail Address - mail (2)
+. Send E-Mail using plain text only
+
+Home
+. Street Address - homePostalAddress (4)
+. City
+. State/Province
+. Zip Code
+. Country/Region:
+. Default
+. Web Page. Phone - homePhone
+. Fax - otherFacsimileTelephoneNumber
+. Mobile - mobile
+
+Business
+. Company Name - o, organizationName (3)
+. Street Address - postalAddress, street, streetAddress (4)
+. City - l
+. State/Province - st
+. Zip Code - postalCode
+. Country/Region - c, co, countryName (3)
+. Default
+. Web Page - URL
+. Job Title - title
+. Department - department, organizationalUnitName, ou (3)
+. Office - physicalDeliveryOfficeName
+. Phone - telephoneNumber
+. Fax - officeFAX, facsimileTelephoneNumber
+. Pager - officePager, pager (3)
+. IP Phone
+
+Personal
+. Spouse
+. Children
+. Gender
+. Birthday
+. Anniversary
+
+Other
+. Notes - comment, info (3)
+. Group Membership
+
+Conferencing
+. Conferencing Server - conferenceInformation
+. Conferencing Address
+
+Digital IDs
+. E-Mail Address - mail
+. Digital IDs... - userCertificate;binary (7)
+
+Organisation (8)
+. Manager - Manager (5)
+. Reports - Reports (5,6)
+
+General (8)
+. (white space) - labeledURI (9)

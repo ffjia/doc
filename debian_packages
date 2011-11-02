@@ -1,0 +1,633 @@
+        ========================================
+            Debian_packages
+        ========================================
+
+# $Id: debian_packages 1383 2010-09-07 06:47:25Z ffjia $
+
+* GPG key
+
+    $ gpg --keyserver wwwkeys.eu.pgp.net --recv-keys f1d53d8c(4f368d5d)
+    $ gpg --armor --export f1d53d8c(4f368d5d) | sudo apt-key add -
+
+    $ sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 2836CB0A8AC93F7A
+
+
+* Desktop environment
+
+    xserver-xephyr
+
+    xmove
+
+    openbox obconf obmenu
+
+    torsmo gdesklets gkrellm
+
+    mlterm
+
+    tilda
+
+    screen [0]
+
+    plymouth libplymouth2 libplymouth-dev [1]
+
+
+* KDE4
+
+    plasmoid-weather
+    digikam
+
+
+* Fonts and input method
+
+    ttf-arphic*
+    ttf-bitstream-vera
+    ttf-dejavu
+    xfonts-terminus
+    xfonts-wqy
+    msttcorefonts
+
+    scim scim-pinyin scim-bridge-client-gtk scim-bridge-agent scim-qtimm
+    im-switch
+
+
+* Editor
+
+    vim vim-gtk exuberant-ctags
+    vim-perl
+
+    enca
+    convmv
+
+        $ convmv --notest -f gbk -t utf8  [^f]*
+
+    tofrodos
+
+    libchm-bin
+
+        $ extract_chmlib <CHMFILE> <OUTDIR>
+
+    txt2tags
+
+    a2ps
+
+        $ info <foo> | a2ps --center-title=a2ps --left-footer= \
+          --right-footer= -r -1 -o <foo>.ps
+
+        $ ps2pdf <foo>.ps
+
+    poppler-data
+
+    antiword
+
+        $ antiword <FOO>.doc | less
+
+    stardict sdcv
+
+    wordnet
+
+        $ wordnet <WORD> -over
+        $ wordnet <WORD> -syns(n/v/a/r)
+        $ wordnet <WORD> -ants(n/v/a/r)
+        $ wordnet <WORD> -grep(n/v/a/r)
+
+    ispell iamerican
+    aspell
+
+
+* Office
+
+    openoffice.org-calc
+    openoffice.org-impress
+    openoffice.org-writer
+
+    openoffice.org-l10n-zh-cn
+
+    openoffice.org-gtk
+
+    openoffice.org-style-tango
+    openoffice.org-style-human
+
+
+* Graphic
+
+    imagemagick
+
+        # Save window on X server to an image file
+        #$ import -pasuse 5 -window root snapshot.png
+        $ sleep 5; import -display :0 -window root snapshot.png
+        $ convert -display :0 x: snapshot.png
+
+        # Crop pics
+        $ convert *.jpg -crop 100x100+0+0 result.jpg
+
+        # Generate gif
+        $ convert -dispose previous -delay 10 *.png kxnorz.gif
+
+        $ convert -delay 5 {a,b,c,d,e}.png t.gif
+
+        # Create "xclock" animated pic
+        windowid=$(xwininfo -name "xclock"| grep '"xclock"' | awk '{ print $4 }')
+        sleep 5
+        for n in `seq 10 69`; do
+            import -frame  -window $windowid clock$n.gif&
+            sleep 1s
+            #  usleep 998000
+        done
+        convert -resize 50% -loop 0 -delay 100 clock?[0-9].gif clocktick.gif
+
+        # Display info about an image file
+        $ identify <IMAGE_FILE>
+
+        # Convert image format
+        $ convert <IMAGE.PNG> <IMAGE.JPG>
+
+        $ for i in *.jpg
+          do
+              convert $i ${i/%jpg/eps}
+          done
+
+        # Join to pics
+        $ convert img1.jpg img2.jpg -fx 'imag1_pixel | imag2_pixel' result.jpg
+
+        # Join 5 small pics to a 1x5 large pic [2]
+        $ montage -geometry 96x96 astronaut.jpg baseball.png butterfly.png \
+           cat-eye.jpg chess.jpg -tile 1x5 ~/test.png
+
+    exif
+
+    scrot
+
+        $ scrot -d 5
+
+        # Take screenshots of an area
+        $ scrot -s
+
+    tetradraw
+
+    $ apt-rdepends -d <PACKAGE> > <PACKAGE>.dot
+    $ springgraph < <PACKAGE>.dot > <PACKAGE>.png
+
+    # vga=0x315
+    fbi
+
+
+* Networking
+
+    postfix
+    postgrey
+
+    firefox flashplugin-nonfree
+
+    amule amule-utils
+
+        http://emule-security.net/news.php
+        http://www.gruk.org/server.met.gz
+        http://www.gruk.org/list.php
+        http://www.emule-mods.de/?servermet=show
+
+        http://www.bluetack.co.uk/config/level1.gz
+
+        http://ed2k.2x4u.de/list.html
+
+        http://emulepawcio.sourceforge.net/nieuwe_site/eplus_fakes/ipfilter.dat
+        http://emulepawcio.sourceforge.net/nieuwe_site/Ipfilter_fakes/ipfilter.zip
+
+    ktorrent
+
+        # Torrent client configuration
+        1. Maximum upload speed
+        80% of your maximum upload speed
+
+        2. Maximum download speed
+        95% of your maximum download speed
+
+        3. Maximum connected peers per torrent
+        upload speed * 1.3
+
+        4. Maximum upload slots
+        1 + (upload speed / 6)
+
+    jigdo jigdo-file jigit
+
+        $ jigdo-lite
+
+    tor privoxy
+
+        # Edit /etc/privoxy/config
+            forward-socks4a /   localhost:9050  .
+
+            #exitpolicy accept * :4661-4666
+
+        $ sudo invoke-rc.d privoxy restart
+
+    mutt esmtp fetchmail procmail wv xlhtml urlview w3m w3m-img w3mmee-img
+
+        $ fetchmail -d0 -v --nosyslog
+
+    muttprint abook mairix
+
+    archmbox
+
+    spamassassin
+    spamc sa-exim
+
+    rss2email
+
+    qterm libqt3-mt-dev python-dev libssl-dev kdelibs5-dev
+        libqt4-dev
+
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=$SOMEWHERE
+        make
+        make install
+
+        http://update.cz88.net/soft/qqwry.rar
+
+    iptraf
+    bwm-ng
+
+    vnstat
+
+    tleds
+
+    iproute
+
+    dnsmasq
+    lwresd
+
+    wireshark
+    ngrep
+    tcpdump
+    nmap
+
+    netcat
+    cryptcat
+
+    hping2
+
+    tcptraceroute
+
+    ipcalc
+
+    stunnel
+
+    lrzsz
+
+    rdate
+
+        $ sudo rdate time.nist.gov
+
+    ntpdate
+
+        $ ntpdate -u -v pool.ntp.org
+
+
+* Multimedia
+
+    amarok
+    gstreamer0.8-mad/gstreamer0.10-plugins-ugly
+    libxine-extracodecs
+    ruby
+
+    exfalso
+
+    python-mutagen
+
+    transcode
+
+        $ tcextract
+
+    vlc vlc-plugin-* mozilla-plugin-vlc
+
+        $ vlc v4l2://
+
+    esound
+
+    scantv
+
+        $ scantv -o ~/.xawtv
+
+    tvtime
+
+
+* Development
+
+    *build-essential*
+
+    gcc libc-dev libc6-dev cpp gdb
+    make
+    manpages-dev
+
+    perl-modules
+    perl-doc
+    perltidy
+    pmtools
+
+    libdbd-mysql
+
+    tidy
+
+    subversion
+    subversion-tools
+
+    git-svn
+
+    trac
+
+    planner
+
+    dia
+
+    devtodo xsltproc
+
+    abs-guide
+
+
+* System
+
+    nis
+    autofs
+
+    slapd ldap-utils ldapdiff smbldap-tools
+    libnss-ldap
+
+    samba smbfs smbclient
+    winbind
+
+        $ smbcontrol smbd shutdown
+
+    # NFS sever
+    nfs-kernel-server nfs-common portmap
+    # NFS client
+    nfs-common portmap
+
+    pmount
+
+    fuseiso9660
+
+    sshfs
+
+        $ sudo modprobe fuse
+        $ sudo adduser your_user_name fuse
+        $ sshfs 192.168.0.1:/meida/music ~/remote_music
+
+    lvm2
+
+    ntfs-3g
+    ntfs-config
+
+    quota
+
+        1. Edit fstab file
+        # <options>
+        usrquota,grpquota
+
+        2. $ quotacheck -ugv <MOUNT_POINT>
+
+        3. $ quotaon -av
+
+        4. $ edquota -u <USER>
+
+        5. $ quotastats
+           $ repquota <MOUNT_POINT>
+
+    aoetools vblade
+
+        # On share storage
+        $ sudo vblade 0 0 eth0 /dev/sda4
+        # On client
+        $ sudo modprobe aoe
+        $ sudo aoe-discover
+        $ sudo aoe-stat
+        $ sudo mkfs.ext3 /dev/etherd/e0.0
+        $ sudo mount /dev/etherd/e0.0 /mnt
+        # LVM support
+        # Add the following line to /etc/lvm/lvm.conf
+
+            types = [ "aoe", 16 ]
+
+    cupsys cupsys-client cupsys-bsd foomatic-filters
+    cups-pdf
+
+    clamav clamav-daemon clamav-milter amavisd-new
+
+    apache2 php4 php4-cgi
+    libapache2-mod-musicinde
+    cadaver
+    awstats/webalizer
+
+    sitecopy
+
+    vncserver xvncviewer
+
+    inotify-tools
+
+    qemu kqemu*
+
+    vmware-player
+
+    prelink
+
+        # Edit /etc/default/prelink, change "unknown" to "yes"
+        $ sudo prelink -avmR
+        $ sudo /etc/cron.daily/prelink
+
+    htop
+
+    bootchart
+
+    sysstat
+
+        $ sar -q -u 5 1
+        # Showing information on buffers
+        $ sar -b 2 10
+        # Showing disk activity
+        $ sar -d
+        $ sar -f /var/adm/sa/sa22 -s 14:20 -e 15:00 -w -q -i 4
+
+    fish
+
+    command-not-found
+
+    uswsusp
+
+
+* Security
+
+    gnupg signing-party
+
+    samhain
+    tripwire bastille
+
+    logcheck
+    logwatch
+
+    crack
+    dictionaries-common
+
+    john
+
+        $ sudo unshadow /etc/passwd /etc/shadow > passwd.1
+        $ john passwd.1
+
+    apg
+    pwgen
+
+    sxid
+
+    wuzzah
+
+    denyhosts
+
+    fail2ban
+
+    scanlogd
+    portsentry
+
+    chkrootkit
+
+    nessus nessusd
+
+        $ sudo nessus-adduser
+        $ sudo ln -fs /etc/init.d/nessusd /etc/rc2.d/S20nessusd
+        $ sudo /etc/init.d/nessusd start
+
+
+* Hardware
+
+    procinfo
+
+    dmidecode
+
+        $ sudo dmidecode -t memory
+
+    powertop
+
+        $ echo 1 > /sys/module/snd_ac97_codec/parameters/power_save
+        $ echo 1500 > /proc/sys/vm/dirty_writeback_centisecs
+        $ hal-disable-polling --device /dev/scd0
+
+    cpuburn
+
+    hdparm
+
+        sudo hdparm -tT <DEVICE>
+
+    bonnie++
+
+        $ bonnie -d path -u user
+        $ bonnie++ -d . -s 32768 -n 1 -m 8GPC -x 100 -r 8192 -u oracle
+
+    smartmontools
+
+        $ sudo smartctl -d ata -a /dev/hda
+        $ sudo smartctl -l error /dev/hda
+
+    screentest bb
+
+    mesa-utils
+
+        $ glxinfo/glxgears
+
+    nvclock
+
+    fbset
+
+    read-edid
+
+    statserial
+
+    input-utils
+
+    minicom
+
+    dvd+rw-tools
+
+    xvkbd
+
+        # Switch to the next desktop
+        $ xvkbd -text "\C\A\[Right]"
+
+    wammu
+
+
+* Debian dedicated
+
+    netselect
+
+        $ sudo netselect -vv <host1> <host2>
+
+    apt-listbugs apt-listchanges
+
+        $ apt-listbugs list <package>
+        $ apt-listchanges mutt
+
+    debsecan
+
+    debsums
+
+    # Debian packages from CPAN
+    dh-make-perl
+
+        $ dh-make-perl --build --install --cpan <MODULE_NAME>
+
+    deborphan
+
+        $ deborphan --guess-all
+
+    apt-cacher
+
+    dpkg-repack
+
+    apt-show-versions
+
+    sysvconfig sysv-rc-conf rcconf
+
+
+* Miscellaneous
+
+    xlockmore-gl
+
+    pal
+
+    lunar
+
+    rsibreak
+
+    ktouch
+
+    vrms
+
+    p7zip
+
+    cksfv
+
+    fdupes findimagedupes
+
+    bchunk
+
+    mdf2iso
+
+    tree
+
+* Fun
+
+    cowsay
+    figlet
+    boxes
+
+    bsdgames
+
+
+* Bio
+
+    cycle
+
+
+Footnotes
+=========
+
+[0] http://arstechnica.com/open-source/news/2009/04/ubuntu-brings-advanced-screen-features-to-the-masses.ars
+[1] http://ubuntuforums.org/showpost.php?p=6892088&postcount=83
+[2] http://fossilpan.blogspot.com/2006/10/gnome-robots_09.html

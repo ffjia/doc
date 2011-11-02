@@ -1,0 +1,48 @@
+        ========================================
+            Diff
+        ========================================
+
+# $Id: diff 39 2006-11-21 02:01:33Z ffjia $
+
+    --- first.txt     2006-01-21 16:20:40.271039432 +0530
+    +++ second.txt    2006-01-21 16:21:00.538958240 +0530
+    @@ -1,6 +1,6 @@
+    -1 ball
+    +3 balls
+     2 bats
+     3 nets
+
+
+    The --- line shows the name of the first file, which has the original
+    inventory list. The +++ line shows the name of the second file, which
+    contains the updated inventory list.
+
+    The @@ line is called the header, and the section below the header is
+    called the hunk. The hunk shows the actual changes between the two files. A
+    large diff file will have several hunks, each with a unique header.
+
+    In the hunk, the lines that are not preceded by - and + symbols are the
+    context lines. Lines starting with - indicate a line that was in the
+    original file but not in the new file. Conversely, lines starting with +
+    indicate a line that is in the new file but not in the original file. In
+    our example, -1 ball means that the line was present in the original file
+    but absent from the new file. The line +3 balls indicates a line was not in
+    the original file.
+
+
+    # To determine whether two files differ
+    $ diff -q <FOO> <BAR>
+    
+    $ diff -Naur <FILE1> <FILE2> > difffile
+
+    # Keep a copy of the original file
+    $ patch -b [FOO] < <PATCHFILE>
+
+    # Displays the results of applying the patch without actually changing the file
+    $ patch --dry-run [FOO] < <PATCHFILE>
+
+
+Related Links
+=============
+
+http://applications.linux.com/article.pl?sid=06/02/16/1938203&tid=47&tid=89

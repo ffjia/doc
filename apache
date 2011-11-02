@@ -1,0 +1,84 @@
+        ========================================
+            Apache
+        ========================================
+
+# $Id: apache 1504 2011-07-25 05:18:18Z ffjia $
+
+Apache2 SSL
+===========
+
+    $ sudo apache2-ssl-certificate
+    $ sudo a2enmod ssl
+    $ sudo cp /etc/apache2/sites-available/default /etc/apache2/sites-available/ssl
+    $ sudo vi /etc/apache2/sites-available/ssl
+
+        NameVirtualHost *:443
+        <VirtualHost *:443>
+
+        SSLEngine On
+        SSLCertificateFile /etc/apache2/ssl/apache.pem
+
+    $ sudo a2ensite ssl
+    $ sudo vi /etc/apache2/ports.conf
+
+        Listen 443
+
+    $ sudo apache2ctl -k restart
+
+
+Disallow browsing working copy administrative dirs
+==================================================
+
+    <directorymatch "^/.*/\.svn/">
+        Order deny,allow
+        Deny from all
+    </directorymatch>
+
+
+Miscellaneous
+=============
+
+    # Split log on the fly into virtual host directories
+    # under /var/log/apache2:
+    CustomLog "| /usr/sbin/vlogger -s access.log /var/log/apache2" vcommon
+
+    CustomLog "|/usr/bin/logger -p local7.info -t httpd" combined
+
+    $ ab -n <REQUESTS> -c <CONCURRENCY> -k <HOST>[:PORT]
+    $ sudo apache2ctl configtest
+
+    $ curl -o /dev/null -s -w %{time_connect}:%{time_starttransfer}:%{time_total} http://www.canada.com
+
+    # List modules compiled into the server
+    $ apache2 -l
+
+    # List currently usable direcrives
+    $ apache2 -L
+
+    # Check virtual host directories
+    $ apache2ctl -S
+
+    # Check port 443
+    $ sudo nmap -P0 -p 443 localhost
+
+    # Don't log internal dummy connection
+    SetEnvIf Remote_Addr "::1" dontlog
+    CustomLog logs/access_log combined env=!dontlog
+
+
+Related Links
+=============
+
+http://www.robotstxt.org/wc/robots.html
+http://httpd.apache.org/docs/2.2/mod/mod_log_config.html#formats
+http://www.howtoforge.com/apache2-logging-to-a-mysql-database-with-mod_log_sql-on-debian-etch
+http://httpd.apache.org/docs/2.2/sections.html
+http://httpd.apache.org/docs/2.2/mod/mod_proxy.html
+http://httpd.apache.org/docs/2.2/mod/mod_authz_host.html
+http://techgurulive.com/2009/05/27/how-to-hide-tomcat-version/
+http://java.sun.com/docs/books/tutorial/deployment/jar/build.html
+http://httpd.apache.org/docs/2.2/misc/perf-tuning.html
+http://www.startssl.com/?app=21
+http://www.modpagespeed.com/
+http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+http://dstufft.com/2011/01/configuring-nginx-for-hyde/

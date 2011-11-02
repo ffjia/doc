@@ -1,0 +1,26 @@
+        ========================================
+            Rss2email
+        ========================================
+
+# $Id: rss2email 39 2006-11-21 02:01:33Z ffjia $
+
+Create a new feedfile
+=====================
+
+    $ r2e new [<YOURMAIL>]
+    $ r2e add <http://www.linux.com/index.rss> [<MAIL_OTHER_THAN_DEFAULT>]
+    $ r2e list
+    $ r2e run [--no-send]
+
+
+Want more?
+==========
+
+    # Set/Modify default email
+    $ r2e email <YOURMAIL>
+    
+    $ r2e delete <N>
+    
+    # Automating feeds
+
+    30 * * * * /usr/bin/r2e run

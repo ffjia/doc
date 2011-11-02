@@ -1,0 +1,63 @@
+        ========================================
+            Firefox
+        ========================================
+
+# $Id: firefox 1493 2011-04-08 05:23:26Z ffjia $
+
+Restore Firefox icons
+=====================
+
+    $ wget -c http://www.cs.cornell.edu/~djm/ubuntu/mozilla-icons/mozilla-firefox.png
+    $ wget -c http://www.cs.cornell.edu/~djm/ubuntu/mozilla-icons/document.png
+    $ chmod 644 mozilla-firefox.png document.png
+    $ sudo dpkg-divert --rename /usr/share/pixmaps/mozilla-firefox.png
+    $ sudo dpkg-divert --rename /usr/share/pixmaps/mozilla-firefox.xpm
+    $ sudo dpkg-divert --rename /usr/lib/mozilla-firefox/icons/default.xpm
+    $ sudo dpkg-divert --rename /usr/lib/mozilla-firefox/icons/document.png
+    $ sudo dpkg-divert --rename /usr/lib/mozilla-firefox/chrome/icons/default/default.xpm
+    $ sudo cp mozilla-firefox.png /usr/share/pixmaps/mozilla-firefox.png
+    $ sudo cp mozilla-firefox.png /usr/share/pixmaps/mozilla-firefox.xpm
+    $ sudo cp mozilla-firefox.png /usr/lib/mozilla-firefox/icons/default.xpm
+    $ sudo cp document.png /usr/lib/mozilla-firefox/icons/document.png
+    $ sudo cp mozilla-firefox.png /usr/lib/mozilla-firefox/chrome/icons/default/default.xpm
+
+
+Prevent update file
+===================
+
+    # Prevent the file from getting updated when Firefox does
+    $ sudo dpkg-divert --add <INSERT FIREFOX ROOT DIRECTORY HERE>/res/forms.css
+
+    # Remove above setting
+    $ sudo dpkg-divert --remove <INSERT FIREFOX ROOT DIRECTORY HERE>/res/forms.css
+
+
+Config
+======
+
+browser.cache.disk.parent_directory;/tmp
+browser.cache.offline.enable;false
+
+
+About
+=====
+
+    about:
+    about:config
+    about:buildconfig
+    about:plugins
+    about:mozilla
+    about:robots
+
+
+Related Links
+=============
+
+http://greasemonkey.mozdev.org/index.html
+http://chrispederick.com/work/webdeveloper/
+http://freehaven.net/%7Esquires/torbutton/
+http://kb.mozillazine.org/Firefox_:_FAQs_:_About:config_Entries
+http://forum.kde.org/how-to-integrate-firefox-into-kde-t-17786.html
+http://wiki.amule.org/index.php/Ed2k_links_handling#Firefox_2_and_3_.28or_later.29
+http://kb.mozillazine.org/Register_protocol#Linux
+http://forums.gentoo.org/viewtopic-t-717117-highlight-firefox.html

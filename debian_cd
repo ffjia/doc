@@ -1,0 +1,107 @@
+        ========================================
+            Debian CD
+        ========================================
+
+# $Id: debian_cd 39 2006-11-21 02:01:33Z ffjia $
+
+A quick reference
+=================
+
+1. Download the debian installer image (the last one stable netinst,
+   actually d-i rc2).
+
+2. Install it in a prototype system, and add all the programs you want
+   to include on the cd. 
+
+3. Copy all the contents of the cd to your hard-disk.
+
+4. Now you have to syncronize your /var/cache/apt/archives with the
+   pool/ of the cd. I've used apt-move for this task:
+    
+    $ apt-move fsck && apt-move update
+
+5. At this step you have a pool/ with all the packages you want, you
+   have to generate your "packages" and "releases" files, it's pretty
+   well documented at the wiki.
+
+6. Now copy the folder backup/dist/sarge/main/intaller-i386/ to the
+   dist/sarge/main/installer/. The folder backup it's created
+   automatically when you run "apt-move fsck".
+
+7. Now, you have to install debian-cd and...
+
+    - go to /usr/share/debian-cd/
+    - edit CONF.sh
+    - load to the envairoment the variables: ". CONF.sh"
+    - make distclean (it cleans your temporal directory)
+    - make mirrorcheck (it checks that dependencies of your mirror is
+      ok)
+    - make status (it should write nothing in your screen)
+    - make make bin-list TASK=tasks/yourtask COMPLETE=1 (your task is a
+      file which list all the programs you want to include on your cd)
+    - make bootable
+    - make bin-images
+
+
+Apt-move
+========
+
+    The apt-move move can cache of Debian packages into a mirror
+    hierarchy. It will help you build your own local mirror. Running
+    apt-move periodically will assist in managing the resulting par‐tial
+    mirror by (optionally) removing obsolete  packages  and  creating
+    valid local Packages.gz and Sources.gz.
+
+    $ apt-move [-c CONFFILE] [-d DIST] [-afqt] <COMMAND>
+
+    # Builds new local versions of Packages.gz and Sources.gz files.
+
+        $ apt-move packages
+
+    # Preferred method for moving package files from your cache into a
+    # local mirror. Equivalent to ’get move delete packages’.
+
+        $ apt-move update
+
+    # Mirror the whole remote site to local (pretty large).
+
+        $ sudo apt-move mirror
+
+    # Only gets the packages that are currently installed on your
+    # system.
+
+        $ sudo apt-move sync
+
+
+Apt-ftparchive
+==============
+
+    The apt-ftparchive is the command line tool that generates the
+    index files that APT uses to access a distribution source. The index
+    files should be generated on the origin site based on the content of
+    that site.
+
+    $ sudo apt-ftparchive -c <APT.CONF> generate <DEB.CONFIG>
+
+
+Overrides files
+===============
+
+    1. Get overrides.<dist>.'' files 
+
+        http://<mirror>/debian/indices
+
+    2. Make indices/ in the root dir of Debian CD
+
+        $ mkdir indices/
+
+    3. Copy overrides.<dist>.'' files to indices/ and unzip them
+
+        $ gzip -d overrides.<dist>.''.gz
+
+
+
+Related Links
+=============
+
+http://wiki.debian.org/DebianCustomCD/

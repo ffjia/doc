@@ -1,0 +1,57 @@
+        ========================================
+            Time
+        ========================================
+
+# $Id: time 1454 2011-02-09 03:35:39Z ffjia $
+
+$ date MMDDhhmmYY(YY)
+$ date +%F -d -7days
+
+$ date -d $(echo "YYYY.MM.DD" | tr '.' '-') +%s
+$ date +%s --date=-2week
+$ date --date=@1188460959
+
+$ date -d '1970-01-01 UTC 1234567890 seconds'
+
+# Days from 2006-07-12
+$ echo $(( $(date -d 2006-07-12 +%j) - $(date +%j) ))
+
+$ echo $(($((`date --date="2008-01-03" +%s`-`date --date="2007-11-03" +%s`))/60/60/24))
+
+
+# Timezone
+* /etc/localtime (which is the same file to timezone file in
+  /usr/share/zoneinfo)
+* /etc/timezone
+
+# in /etc/default/rcS
+UTC=no
+
+
+# rtc module: rtc, genrtc, rtc_dev
+* hwclock
+
+    --set set the rtc to the time given with --date
+
+        $ hwclock --set --date="9/18/05 12:00:00"
+
+    --show read hardware clock and print result
+
+        # in /etc/default/rcS
+        # HWCLOCKPARS="--directisa“
+        $ hwclock --directisa --show
+
+    --hctosys set the system time from the hardware clock
+
+    --systohc set the hardware clock to the current system time
+
+
+$ touch -t yyyymmddHHMM <FILE>
+
+
+Related Links
+=============
+
+http://ntp.isc.org/bin/view/Servers/NTPPoolServers
+http://www.linux-watch.com/news/NS2848786843.html
+http://networking.ringofsaturn.com/Protocols/ntp.php

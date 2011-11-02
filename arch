@@ -1,0 +1,46 @@
+        ========================================
+            Arch
+        ========================================
+
+# $Id: arch 1463 2011-02-10 09:14:05Z ffjia $
+
+* Downgrade xorg-server
+
+    $ sudo pacman -S extra/xorg-server extra/xf86-input-evdev extra/xf86-input-keyboard extra/xf86-input-mouse
+
+* Find packages not required
+
+    $ pacman -Qdt
+
+* Script to fix pacman broken problem due to openssl upgrade
+
+    # http://bbs.archlinux.org/viewtopic.php?id=95007
+    #!/bin/bash
+
+    arch=x86_64
+    mirror=http://mirror.rit.edu/archlinux
+
+    # link to cache (or download) and extract: openssl,libarchive,libfetch,pacman
+    cd /tmp
+    for pkg in openssl-1.0.0-2 libarchive-2.8.3-3 libfetch-2.30-3 pacman-3.3.3-5; do
+        pkgname=${pkg}-${arch}.pkg.tar.gz
+        if [[ -e /var/cache/pacman/pkg/${pkgname} ]]; then
+            ln -sf /var/cache/pacman/pkg/${pkgname} .
+        else
+            wget ${mirror}/core/os/${arch}/${pkgname} || exit 1
+        fi
+        sudo tar -xvpf ${pkgname} -C / --exclude .PKGINFO --exclude .INSTALL || exit 1
+    done
+
+    # now reinstall using pacman to update the local pacman db
+    sudo pacman -Sf openssl libarchive libfetch pacman || exit 1
+
+    # now update your system
+    sudo pacman -Syu
+
+
+Related Links
+=============
+
+http://rollingrelease.com/system/2010/10/securing-arch-linux
+https://wiki.archlinux.org/index.php/Maximizing_Performance

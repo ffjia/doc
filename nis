@@ -1,0 +1,138 @@
+        ========================================
+            NIS
+        ========================================
+
+# $Id: nis 1149 2009-07-20 08:57:02Z ffjia $
+
+NIS Setup
+=========
+
+* Red Hat specific
+
+    $ cd /var/yp
+    # /etc/domainname
+    $ domainname <DOMAIN_NAME> # FIXME
+    $ /usr/lib/yp/ypinit -m
+    $ /usr/lib/yp/ypinit -s <MASTERSERVER>
+    $ ypserv
+
+
+* Debian specific
+
+    # For more detail, refer to nis.debian.howto.gz
+
+    # Better add NISDOMAIN in the /etc/hosts file
+    $ sudo apt-get install nis
+
+    # Edit /etc/default/nis
+
+        NISSERVER=true
+        NISCLIENT=false
+
+    # Edit /etc/ypserv.securenets
+
+        # Restrict to 192.168.1.x
+        255.255.255.0       192.168.1.0
+
+    $ sudo invoke-rc.d nis restart
+    $ /usr/lib/yp/ypinit -m
+
+
+Checking NIS status from client
+===============================
+
+    $ ypwhich
+    $ ypcat passwd
+    $ cat /etc/nsswitch.conf
+
+        hosts:  dns [NOTFOUND=return] nis
+
+    $ cat /etc/yp.conf
+
+    $ ypmatch nisuser passwd
+
+    $ getent passwd nisuser
+
+
+Script transfers map
+====================
+
+    #!/bin/sh
+    mydomain = ´/bin/domainname´
+    cd /var/yp/$mydomain  # the NIS directory
+    for map in ´/bin/ls´; do
+       /usr/lib/yp/ypxfr $map
+    done
+
+
+NIS theory
+==========
+
+    The unit of sharing in NIS is the record, not the file. A record usually
+    corresponds to one line in a config file. A master server maintains the
+    authoritative copies of system files, which are kept in their original
+    locations and formats and are edited with a text editor just as before. A
+    server process makes the contents of the files available over the network.
+    A server and its clients constitute an NIS "domain."
+
+    Data files are preprocessed into database files by the Berkeley DB hashing
+    library to improve the efficiency of lookups. After editing files on the
+    master server, you use make to tell NIS to convert them to their hashed
+    format.
+
+    If you want users to be able to change their passwords with yppasswd, you
+    must run the yppasswdd daemon on the master NIS server. The Linux version
+    of this server has been known to crash frequently, so be sure to verify
+    that it is still running if the yppasswd command doesn't seem to be
+    working.
+
+
+NIS commands and daemons
+=======================
+
+Program    Description
+-------    -----------
+
+ypserv     Is the NIS server daemon, started at boot time
+
+ypbind     Is the NIS client daemon, started at boot time
+
+domainname Sets the NIS domain a machine is in (run at boot time)
+
+ypxfr      Downloads current version of a map from master server
+
+ypxfrd     Serves requests from ypxfr (runs on master server)
+
+yppush     Makes slave servers update their versions of a map
+
+makedbm    Builds a hashed map from a flat file
+
+ypmake     Rebuilds hashed maps from flat files that have changed
+
+ypinit     Configures a host as a master or slave server
+
+ypset      Makes ypbind connect to a particular server
+
+ypwhich    Finds out which server the current host is using
+
+yppoll     Finds out what version of a map a server is using
+
+ypcat      Prints the values contained in an NIS map
+
+ypmatch    Prints map entries for a specified key
+
+yppasswd   Changes a password on the NIS master server
+
+ypchfn     Changes GECOS information on the NIS master server
+
+ypchsh     Changes a login shell on NIS master server
+
+yppasswdd  Is the server for yppasswd, ypchsh, and ypchfn
+
+ypupdated  Is the server for updating NIS maps (managed by inetd)
+
+
+Related Links
+=============
+
+http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch30_:_Configuring_NIS

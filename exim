@@ -1,0 +1,172 @@
+        ========================================
+            Exim
+        ========================================
+
+# $Id: exim 936 2008-07-18 01:47:06Z ffjia $
+
+Commands in console
+===================
+
+    # Checking Exim support
+    $ exim4 -bV
+
+    # Address-testing mode
+    $ exim4 -v -bt <USER@DOMAIN>
+
+    $ exim4 -v -odf <USER@DOMAIN>
+        Subject: Blah
+        Blash blah blah.
+        .
+
+    # Start without daemonising itself
+    $ exim4 -bdf
+
+    $ exim4 -bd -d+tls 2>&1 | tee exim
+
+    $ sudo update-exim4.conf
+
+
+Telnet ESMTP
+============
+
+    ehlo
+    auth
+    mail from
+    rcpt to
+    data
+    quit
+
+
+Support TLS
+===========
+
+    1. Create a self-signed certificate
+    $ openssl req -x509 -newkey rsa:1024 -keyout key -out cert -days 9999 -nodes
+    $ chown root.Debian-exim key cert
+    $ chmod 640 key cert
+
+    2. Add entry in 03_exim4-config_tlsoptions
+
+        tls_advertise_hosts = *
+        tls_certificate = cert
+        tls_privatekey = key
+
+    3. Testing
+    $ telnet localhost 25
+
+        >ehlo foo.bar
+        >STARTTLS
+
+
+AUTH
+====
+
+    AUTH PLAIN and AUTH LOGIN are disabled for connections which are not
+    protected by SSL/TLS per default. These authentication methods use
+    cleartext passwords (like telnet).
+
+    acl_smtp_auth is to check if somebody is allowed to use the AUTH
+    command.  The earliest time you can check if somebody is trying to
+    relay is in acl_smtp_rcpt, because "relay" means "recpient is not in
+    my local_domains" and you cannot know that before you get the
+    recipients.
+
+
+SMTP Authentication
+==================
+
+    PLAIN:
+
+    $ printf 'username\0username\0password' | mmencode
+    $ perl -MMIME::Base64 -e 'print encode_base64("username\0username\0password");')
+
+    S: 220 mail.example.com ESMTP Postfix (1.1.7)
+    C: EHLO example.com
+    S: 250-mail.example.com
+    S: 250-PIPELINING
+    S: 250-SIZE 10240000
+    S: 250-VRFY
+    S: 250-ETRN
+    S: 250-AUTH DIGEST-MD5 CRAM-MD5 GSSAPI PLAIN LOGIN
+    S: 250-AUTH=DIGEST-MD5 CRAM-MD5 GSSAPI PLAIN LOGIN
+    S: 250-XVERP
+    S: 250 8BITMIME
+    C: AUTH PLAIN dGVzdAB0ZXN0AHRlc3RwYXNz
+    S: 235 Authentication successful
+    C: QUIT
+    S: 221 Bye
+
+    # If you are using an openssl command to connect to an SSL or TLS
+    # server, make sure to enter your SMTP commands in lowercase
+    $ openssl s_client -starttls smtp -crlf -connect mail2.sw-linux.com:25
+
+    $ sudo apt-get install swaks libnet-ssleay-perl
+    # Test if TLS is supported
+    $ swaks -a -tls -q HELO -s mail2.sw-linux.com -au jasonb -ap '<>'
+    $ swaks -a -tls -q AUTH -s mail2.sw-linux.com -au feifeijia
+
+
+Attachment size
+===============
+
+    02_exim4-config_options:message_size_limit = MESSAGE_SIZE_LIMIT
+    02_exim4-config_options:# rfc1413_query_timeout = 30s
+
+
+Move mail spool
+===============
+
+    This allows a minimal switchover period (for local mail submission
+    even though the server is down).
+
+        $ cd /var/spool
+        # kill off exim's daemon here
+        $ mv exim exim.old && ln -s /new/spool/for/exim exim
+        $ mv -i exim.old/* exim/.
+        # restart exim
+        $ rmdir exim.old
+
+
+Base64 and Quoted-Printable # FIXME
+==========================
+
+    If you examine my email in its raw form, you will see that (for
+    example) the curly single right-quotes are encoded, in
+    "quoted-printable" format, as the string =E2=80=99, which of course is
+    the quoted-printable form of three hexadecimal bytes 0xE2 0x80 and
+    0x99, respectively. In octal, those bytes are 0342 0200 0231.
+
+    When I do "echo -e '\342\200\231'" in my UTF-8 terminal, I get a curly
+    right single-quote.
+
+    # =?gb2312?b?UmU6ILK71qq1wMrHsrvKx3ZpbbXEYnVn?=
+    $ echo "UmU6ILK71qq1wMrHsrvKx3ZpbbXEYnVn" | openssl base64 -d
+
+    # =?gb2312?q?=CD=BC=C6=AC=D0=C2=CE=C5?=
+    $ echo "=CD=BC=C6=AC=D0=C2=CE=C5" | tr -d = | xxd -r -p
+
+    $ echo 中国 | openssl base64 -e
+    $ echo 5Lit5Zu9Cg== | openssl base64 -d
+
+    # base64 解码要求输入以四个字符为一组，且一行最多不能超过76个字符
+    $ $ cat file | tr -d '\n' | fold -w76 | openssl base64 -d
+
+
+Backscattering
+==============
+
+    There's no excuse for backscattering (bouncing messages to envelope
+    sender addresses), because most bouncing mail these days is either
+    spam or virus laden. Backscatter needlessly annoys innocent systems
+    and users to no good end. If you want to reject mail based upon
+    whatever criteria you choose, do it during the SMTP transaction!
+
+
+
+Related Links
+=============
+
+http://www.howtoforge.com/exim-authenticated-smarthost
+
+
+# vim:set nofoldenable:

@@ -1,0 +1,149 @@
+        ========================================
+            kernel
+        ========================================
+
+# $Id: kernel 1470 2011-02-23 09:05:01Z ffjia $
+
+Compile Linux 2.6 kernel
+========================
+
+    $ make mrproper
+    $ make xconfig ({def,old}config)
+    $ make
+    $ make modules_install
+    $ make install
+
+
+Install Con Kolivas patched kernel
+==================================
+
+    $ sudo aptitude install build-essential bin86 kernel-package \
+                            libncurses5-dev
+    # Needed for make xconfig
+    $ sudo aptitude install libqt3-headers libqt3-mt-dev
+    $ cd /usr/src
+    $ sudo mv linux-2.6.22/ linux-2.6.22cK1
+    $ sudo rm -f linux
+    $ sduo ln -s /usr/src/linux-2.6.22cK1 linux
+    $ sudo bzcat /home/username/patch-2.6.22-cK1.bz2 | sudo patch -p1
+    $ sudo cp /boot/config-2.6.20-16-generic .config
+    $ sudo make xconfig
+    $ sudo make-kpkg clean
+    $ sudo make-kpkg -initrd --revision=cK1 linux_image
+    $ sudo ./NVIDIA-Linux-x86-1.0-9639-pkg1.run --kernel-name='2.6.22-cK1'
+
+    #$ make-kpkg --append-to-version "-2-386" --revision 2.4.27 --config old configure
+
+
+Configure kernel parameters at runtime
+======================================
+
+    # /etc/sysctl.conf
+    net.ipv4.icmp_echo_ignore_all=1
+
+    # Use TCP syncookies when needed
+    net.ipv4.tcp_syncookies = 1
+    # Enable TCP window scaling
+    net.ipv4.tcp_window_scaling: = 1
+    # Increase TCP max buffer size
+    net.core.rmem_max = 16777216
+    net.core.wmem_max = 16777216
+    # Increase Linux autotuning TCP buffer limits
+    net.ipv4.tcp_rmem = 4096 87380 16777216
+    net.ipv4.tcp_wmem = 4096 65536 16777216
+    # Increase number of ports available
+    net.ipv4.ip_local_port_range = 1024 65000
+
+
+    $ sudo sysctl -w net.ipv4.ip_forward=1
+
+
+    # Load in sysctl settings from the file
+    $ sysctl -p /etc/sysctl.conf
+
+
+    # Debian
+    $ sudo apt-get install systune
+    # Editing /etc/systune.conf
+    /proc/sys/net/ipv4/icmp_echo_ignore_all:1
+    $ systune -c /etc/systune.conf
+
+
+Proc filesystem
+===============
+
+    /proc/cpuinfo
+    /proc/meminfo
+    /proc/interrupts
+    /proc/ioports
+    /proc/partitions
+    /proc/version
+
+
+    # Standby or STM
+    $ cat /sys/power/state
+
+
+    # Show harddisk model
+    $ cat /proc/ide/ide0/hda/model
+
+
+    # Max process
+    $ cat /proc/sys/kernel/pid_max
+
+
+    # Drop cache
+    $ echo 3 > /proc/sys/vm/drop_caches
+
+
+swappiness
+==========
+
+While the kernel can give up buffer cache memory in a low memory situation it
+does not necessarily do so. In low memory situations the kernel has to make a
+choice: Shrink the buffer cache or swap out some process instead. The choice
+the kernel actually makes is controlled by the variable
+/proc/sys/vm/swappiness. The number is a percentage: Set to 100, the kernel
+will never shrink the cache when memory is tight, but will always swap a
+program instead. When set to 0, we are at the other extreme of the continuum:
+The kernel will then always try to shrink the buffer cache and avoid swapping
+programs at all cost. The default is 60.
+
+
+Disk activity debug
+==================
+
+    $ /etc/init.d/syslogd stop
+    $ echo 1 > /proc/sys/vm/block_dump
+    $ echo 0 > /proc/sys/vm/block_dump
+    $ /etc/init.d/syslogd start
+
+    # another choice => lm-profiler
+
+
+Miscellaneous
+=============
+
+    $ echo "apm    power_off=1" >> /etc/modules
+
+
+    # Check framebuffer support
+    $ grep CONFIG_FB_VESA /boot/config-`uname -r`
+
+    # Check codepage support
+    $ grep CONFIG_NLS /boot/config-`uname -r`
+
+
+    $ sudo modprobe loop max_loop=64
+
+
+    $ modinfo /lib/modules/`uname -r`/fs/msdos/msdos.ko
+
+
+Related Links
+=============
+
+http://kernel.org/doc/Documentation/
+http://blog.urbanairship.com/blog/2010/09/29/linux-kernel-tuning-for-c500k/
+http://blog.ksplice.com/2011/01/solving-problems-with-proc/
+http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=a63d83f427fbce97a6cea0db2e64b0eb8435cd10

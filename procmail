@@ -1,0 +1,21 @@
+        ========================================    
+            Procmail
+        ========================================    
+
+# $Id: procmail 442 2007-06-25 09:49:08Z ffjia $
+
+* Refilter old mail folder according to current filter strategy
+
+    $ mv mbox whatever
+    $ cat whatever | formail -s procmail
+
+
+* Redirecting existing mailbox
+
+    $ procmail -d fab < /var/mail/mail
+
+
+Related Links
+=============
+
+http://www.ii.com/internet/robots/procmail/qs/

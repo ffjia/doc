@@ -1,0 +1,221 @@
+        ========================================
+            LVM
+        ========================================
+
+# $Id: lvm 1483 2011-03-31 05:20:15Z ffjia $
+
+LVM Setup
+=========
+
+* Turn on kernel component
+
+    Device Drivers --> Multi-device support (RAID and LVM)
+
+        [*] Multiple devices driver support (RAID and LVM)
+        < >   RAID support
+        <*>   Device mapper support
+        < >     Crypt target support (NEW)
+
+
+* Detect LVM (in Arch's rc.sysinit)
+
+if [ "$USELVM" = "yes" -o "$USELVM" = "YES" ]; then
+        if [ -x /sbin/lvm -a -d /sys/block ]; then
+                # Kernel 2.6.x, LVM2 groups
+                /sbin/modprobe -q dm-mod 2>/dev/null
+                stat_busy "Activating LVM2 groups"
+                /sbin/lvm vgscan --ignorelockingfailure --mknodes >/dev/null
+                /sbin/lvm vgchange --ignorelockingfailure -a y >/dev/null
+                if [ $? -ne 0 ]; then
+                        stat_fail
+                else
+                        stat_done
+                fi
+        fi
+fi
+
+
+* Howto
+
+    $ sudo apt-get install lvm2
+    # Change the partition type to 0x8e (Linux LVM)
+    $ sudo pvcreate /dev/hda7
+    $ sudo vgcreate lvmxen /dev/hda7
+    $ sudo vgmknodes lvmxen (optional)
+    $ sudo lvcreate -L 6G -n domu lvmxen
+    $ sudo mkreiserfs /dev/lvmxen/domu
+
+
+* Physical Volume
+
+    $ sudo pvcreate <DEVICE> [<DEVICE>...]
+
+    $ sudo pvscan
+    $ sudo pvdisplay
+
+    # Move all logical extents of any logical volumes on /dev/hda3 to
+    # /dev/hda6
+    $ sudo modprobe dm-mirror
+    $ sudo pvmove /dev/hda3 /dev/hda6
+
+    # Free PVs online so you can replace them easily. In a hot-swap
+    # environment, you can even swap all disks with no downtime at all!
+    #
+    # pvmove's only requirement is a contiguous number of free extents in the
+    # VG equivalent to the number of extents to be moved out of a PV.
+    # Before freeing, disable /dev/hda6 allocation
+    $ sudo pvchange -xn /dev/hda6
+    # Move allocated extents out of /dev/hda6
+    $ sudo pvmove -i 10 /dev/hda6
+
+
+
+    # Remove a physical volume
+    $ sudo pvremove /dev/hda3
+
+
+* Volume Group
+
+    $ sudo vgcreate [-s <PE_SIZE>] <VG_NAME> <PHYSICAL_VOLUME_PATH>
+
+    $ sudo vgscan
+    $ sudo vgdisplay
+
+    # Extend physical volumes
+    $ sudo vgextend <VG> /dev/hdb2
+
+    # Remove physical volumes from a volume group
+    $ sudo vgreduce <VG> /dev/hda3
+
+    $ sudo vgreduce --removemissing <VG>
+
+    # Remove VG
+    $ sudo vgchange -a n <VG>
+    $ sudo vgremove [<VG>]
+
+    # Activate all known volume groups in the system
+    $ vgchange -a y
+
+
+* Logical Volume
+
+    # The majority of LVM commands are expecting something in the format
+    # /dev/{vg-name}/{lv-name} as the target specification for operation.
+    $ sudo lvcreate –L <SIZE> [-n <LV_NAME] <VG_NAME>
+
+    $ sudo lvcreate -n lv -l 100%FREE vg
+
+    $ sudo lvscan
+    $ sudo lvdisplay
+
+    $ sudo lvremove <LV> [<LV>...]
+
+    # Extend an LV with a (mounted and active) ReiserFS
+    $ sudo lvextend -L +1G /dev/lvmxen/domu
+    #$ sudo resize_reiserfs -s+1G -f /dev/lvmxen/domu
+    $ sudo resize_reiserfs /dev/lvmxen/domu
+    # ext3 filesystem
+    #$ sudo resize2fs /dev/lvmxen/domu 5G
+
+    $ sudo pvcreate /dev/sdb1
+    $ sudo vgextend VolGroupBoot /dev/sdb1
+    $ sudo lvextend -l +100%FREE /dev/VolGroupBoot/LogVolSlash /dev/sdb1
+    $ sudo resize2fs -p /dev/VolGroupBoot/LogVolSlash
+
+    # Shrink an LV with a ReiserFS
+    $ sudo umount </MOUNTPOINT_OF_LV>
+    $ sudo resize_reiserfs −s−768M </DEV/VG_NAME/LV_NAME>
+    $ sudo lvreduce -L <SIZE> </DEV/VG_NAME/LV_NAME>
+    $ sudo mount </DEV/VG_NAME/LV_NAME> </MOUNTPOINT_OF_LV>
+
+
+* Snapshot
+
+    # LVM Snapshots have not been 100% reliable in 2.6.x kernels for any
+    # use. FIXME
+
+    $ sudo lvcreate -L 521M -s -n <SNAP_LV_NAME> </DEV/VG_NAME/LV_NAME>
+    # Once the copy process finishes and the Snapshot is no longer needed
+    $ sudo lvremove </DEV/VG_NAME/SNAP_LV_NAME>
+
+    # For consistency, in case a database is on top of an LV and a consistent
+    # backup is desired
+    SQL> FLUSH TABLES READ LOCK
+    {create Snapshot}
+    SQL> RELEASE READ LOCK
+    {start copy process from the snapshot LV}
+
+    # The snapshot does not require the same amount of space. The requirements
+    # depend on how much data changes on the original volume in the meantime
+    # (as long as the snapshot is active). The snapshot size you provide when
+    # running “lvcreate -s” is the maximum size the snapshot can grow to
+    # before it will be discarded.
+
+    A snapshot volume need not be as large as the original volume, because
+    Snapshots are copy-on-write: When you make a snapshot, nothing is done.
+    When you read from the snapshot, the requested block is read from the
+    original volume. If a block is changed on the original volume, the
+    original content it is copied to the snapshot first. Now, if you read from
+    the snapshot, the saved copy is read from the snapshot instead, shadowing
+    the modified data from the original. [0]
+
+
+* More Usage
+
+    $ sudo lvmdiskscan
+
+
+* dmsetup
+
+    $ sudo dmsetup info /dev/arch/var
+    $ sudo dmsetup remove /dev/mapper/arch-shoot
+    $ sudo dmsetup remove /dev/mapper/arch-shoot-cow
+    $ sudo lvremove /dev/mapper/arch-shoot
+
+
+LVM Basics
+==========
+
+* Purpose
+
+    LVM's primary use is for scenarios where you need extreme numbers of
+    files, extremely large files, and/or the need to resize your
+    filesystems.
+
+
+* Numbers
+
+    - Any PV and any LV can have only 65534 PE of them
+    - Max number of VGs: 99
+    - Max number of LVs: 256
+
+
+* Resizing of Logical Volumes
+
+    - Extend the LV before the filesystem
+
+    - Shrink filesystem first when shrink an LV, otherwise data in the
+      reduced part is lost!!!
+
+
+* Rename PVs or LVs
+
+    - Deactivate them before you are allowed to rename
+
+
+* Restore
+
+    1. find your records in /etc/lvm/archive
+    #  say, vg_00xx.vg
+    2. $ vgcfgrestore -f vg_00xx.vg vg_name
+
+
+Related Links
+=============
+
+http://www.linuxdevcenter.com/lpt/a/6553
+http://www.ibm.com/developerworks/linux/library/l-lvm2/?S_TACT=105AGX52&S_CMP=cn-a-l
+http://kerneltrap.org/Linux/LVM_Snapshot_Merging
+http://www.unixconsult.org/zfs_vs_lvm.html
+http://sunoano.name/ws/public_xhtml/lvm.html
+[0] http://mysqldump.azundris.com/archives/54-A-quick-tour-of-LVM.html

@@ -1,0 +1,80 @@
+        ========================================
+            MPlayer
+        ========================================
+
+# $Id: mplayer 1363 2010-08-24 01:42:41Z ffjia $
+
+Compile mplayer
+==============
+
+    By default:
+    /usr/local/lib/codecs however, you can set other
+    directory to your purpose when using configure.
+
+    Most of all:
+    you must put the codecs to proper location before compiling MPlayer.
+
+    $ ./configure --codecsdir=/usr/local/lib/codecs/ \
+      --enable-runtime-cpudetection  --enable-largefiles \
+      --enable-freetype --disable-x264
+
+
+Miscellaneous
+=============
+
+    # Change default font of subtitle
+    $ mplayer -font /path/to/fontfile    # or
+    $ mplayer -fontconfig -font <font-name> # if fontconfig support compiled in
+
+    # Play dual audio
+    $ mplayer -aid n <FILE>
+
+    $ mplayer -ao pcm:file="audio.wav" -ss 418 -endpos 37 `cat audio.ram`
+
+    # Convert audio to mp3 format
+    $ mencoder -ovc frameno -oac mp3lame -o a.mp3
+
+    $ mplayer rtsp://streamfile -dumpstream -dumpfile <FILE>
+
+    # Preventing screensaver when playing
+    # xset s off; xset s on
+    $ xset s 0 0; mplayer <MEDIAFILE>; xset s x x
+    $ mplayer -stop-xscreensaver (X11 only)
+
+    # Play high-res video files on a slow processor
+    $ mplayer -framedrop -vfm ffmpeg -lavdopts lowres=1:fast:skiploopfilter=all
+
+    $ mplayer -shuffle -loop0 *
+
+    # Play when sound card is used
+    $ mplayer -ao alsa:device=hw=1
+
+    # Play with 4:3 FIXME
+    $ mplayer -vf expand=:::::4/3
+
+    # First 100 frames will be written to current dir as jpgs
+    $ mplayer -vo jpg -frames 100 somefile.avi
+
+    $ mplayer tv:// -tv driver=v4l2
+
+    $ mplayer tv:// -tv driver=v4l2:device=/dev/video0 -fps 5 -nosound -vo jpeg
+
+    $ mencoder -oac lavc -ovc lavc -of lavf -lavcopts \
+               #aglobal=1:vglobal=1:vcodec=mpeg4:vbitrate=500:acodec=libfaac \
+               aglobal=1:vglobal=1:vcodec=mpeg4:acodec=libfaac \
+               #-af lavcresample=24000 -vf scale=368:208,harddup -lavfopts \
+               -af lavcresample=24000 -vf harddup -lavfopts \
+               format=psp -ofps 30000/1001 -info name=MovieTitle INPUT -o OUTPUT
+
+    # Hardcoded subtitles
+    $ mencoder -ovc xvid -xvidencopts fixed_quant=5 -oac copy -sub subtitles.srt -o output.avi input.avi
+
+    # Extract the thumbnail image
+    $ ffmpeg -y -i Video.avi -f image2 -ss 5 -vframes 1 -s 160x120 -an M4V00001.THM
+
+
+Related Links
+=============
+
+http://gentoo-wiki.com/HOWTO_Emerge_MPlayer
+http://www.linux.com/feature/121385

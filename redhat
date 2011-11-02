@@ -1,0 +1,108 @@
+        ========================================
+            Redhat
+        ========================================
+
+# $Id: redhat 1522 2011-09-13 12:47:38Z ffjia $
+
+RPM Packages
+============
+
+    $ rpm -qpi xxx.rpm
+    $ rpm -qpl xxx.rpm
+    $ rpm -qpR xxx.rpm
+    $ rpm -qpc xxx.rpm
+    $ rpm -qpd xxx.rpm
+
+    # Check package
+    $ rpm -qa | xargs -n1 rpm -V
+
+    $ rpm -q -changelog xxx.rpm
+
+    # Extract pre and post scripts
+    $ rpm -q --scripts kernel
+    $ rpm -qp --scripts kernel.i386.rpm
+    $ rpm -Uvh --force --nopre MariaDB-server-5.2.3-87.el5.x86_64.rpm
+
+    $ rpm -q --requires muttprint
+
+    # Print kernel version (for kernel/initramfs name in /boot)
+    $ rpm -q --qf '%{version}-%{release}.%{arch}' kernel
+
+    # http://wiki.qmailtoaster.com/index.php/Vpopmail_-_roaming_users_configuration
+    $ rpm -Uvh --replacefiles --replacepkgs vpopmail-toaster*.rpm
+
+    $ rpm2cpio <FOO.rpm> | cpio -idmv
+
+    $ rpmbuild --rebuild --target i686 foo.scr.rpm
+
+        /usr/src/redhat/RPMS/i386
+
+    $ rpm -ivh ..
+    $ cd /usr/src/xxx/SPEC
+    $ rpmbuild -bp xxx.spec --nodeps
+
+    $ cd ../BUILD/xxx
+
+    $ rpm --eval %{_prefix}
+
+
+RPM{NEW,SAVE} [0]
+=============
+
+    rpmnew files are new configuration files that the upgrade has brought in
+    and contain new functionality that should be put in – instead of forcing
+    the change they are backed up with a .rpmnew  extension.
+
+    rpmsave files are configuration files that had local changes but should
+    have been removed –instead of losing the changes, they are backed up with
+    a .rpmsave extension.
+
+
+YUM
+===
+
+    $ yum check-update
+    $ yum list updates
+
+    $ yum update
+    $ yum upgrade
+
+    $ yum list installed
+    $ yum list available
+
+    $ yum whatprovides "*File::stat*"
+
+    $ yum install yum-presto
+
+    $ yum --nogpgcheck localinstall /media/cdrom/CentOS/RPMS/postgresql-7*
+
+    $ yum --enablerepo=centosplus upgrade php*
+
+    $ yum groupinstall 'Development Tools'
+
+    # http://wiki.centos.org/HowTos/OS_Protection#head-4f74fbcf2929d22f8cb78adbecefb85c2cef15ec
+    If you don't need i386/i686 packages for compatability purposes, you may
+    want to remove them as well, by using yum remove *.i?86, and then keep
+    them gone by adding exclude = *.i?86 to your /etc/yum.conf
+
+    # Remove not in used kernels
+    $ yum remove $(rpm -qa | grep kernel | grep -v `uname -r | sed -e "s/[^0-9]*$//"` | grep -v `grep "title CentOS" /etc/grub.conf | head -1 | sed -e"s/.*(\(.*\))/\1/;s/[^0-9]*$//"` | grep -v utils)
+
+
+Miscellaneous
+=============
+
+    $ kudzu -p
+
+    $ alternatives --config java
+
+
+Related Links
+=============
+
+http://dag.wieers.com/rpm/FAQ.php
+http://hutuworm.blogspot.com/2008/08/cobblerlinux.html
+https://fedoraproject.org/wiki/Flash#32_bit_wrapped_version
+http://fedoraproject.org/wiki/YumUpgradeFaq
+http://fedoraproject.org/wiki/EPEL/FAQ#howtouse
+[0] http://geek.co.il/wp/2010/02/12/upgrading-centos-5-to-fedora-12

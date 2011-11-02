@@ -1,0 +1,152 @@
+        ========================================
+            Theme
+        ========================================
+
+# $Id: theme 1242 2010-02-26 08:06:14Z ffjia $
+
+KDE
+===
+
+    $ exec startkde
+
+
+* KDM Theme
+
+    $ tar xvjf <Theme.tar.bz2> -C /usr/share/apps/kdm/themes/
+    $ vi /etc/kde3/kdm/kdmrc
+
+        Theme=/usr/share/apps/kdm/themes/<Theme>
+        UseTheme=true
+        ServerArgsLocal=-nolisten tcp -dpi 96
+
+
+* KDE Screensaver
+
+    /usr/share/applnk/System/ScreenSavers/foo.desktop
+
+
+* Prevent user change to one individual's ~/.kde/ directory
+
+    # Add [$i]
+    [Desktop0][$i]
+
+
+*  Showing Tabs in Konqueror at Bottom
+
+    # ~/.kde/share/config/konquerorrc
+    [FMSettings]
+    TabPosition=Bottom
+
+
+* List all possible modules
+
+    $ kcmshell --list
+
+
+* Limit access to the module of KDE
+
+    # Add in ./kde/share/config/kdeglobals
+    kde-<MODULE_NAME>.desktop=false
+
+
+* Face
+
+    ~/.face.icon
+
+
+GNOME
+=====
+
+    $ exec gnome-session
+
+
+* GNOME Screensaver
+
+    /usr/lib/xscreensaver/
+
+
+* Let GNOME use system locale
+
+    export G_FILENAME_ENCODING=@locale
+    export G_BROKEN_FILENAMES=1
+
+
+* GConf system
+
+    - Mandatory (Mandatory settings supersede default settings)
+
+        /etc/gconf/gconf.xml.mandatory/
+
+    - Default
+
+        /etc/gconf/gconf.xml.default/
+
+    - User
+
+        ~/.gconf/
+
+    $ sudo gconf-editor
+
+
+* GNOME main-menu
+
+    /usr/share/applications/
+    ~/.config/menus/
+
+
+* Face
+
+    ~/.face
+
+
+* Update GTK info
+
+    $ /usr/bin/gtk-query-immodules-2.0 > /etc/gtk-2.0/gtk.immodules
+    $ /usr/bin/gdk-pixbuf-query-loaders > /etc/gtk-2.0/gdk-pixbuf.loaders
+
+
+Xfce
+====
+
+    $ exec startxfce4
+
+    $ cat ~/.cache/xfce4/xfrun4/history
+
+    # Default configuration files location
+    ~/.config/xfce4 and ~/.config/xfce4-session folders
+
+    # Trash located
+    ~/.local/share/Trash/files
+
+    # Xfce Goodies
+    # thunar-media-tags-plugin
+    # libthunar-vfs-1-dev and libtagc0-dev packages needed
+    $ ./configure --prefix=$(pkg-config --variable prefix thunarx-1)
+    $ make && make install
+
+    # Halt PC as normal user (in sudoers)
+    %shutdown ALL=(root) NOPASSWD: /usr/sbin/xfsm-shutdown-helper
+
+
+Cursor
+======
+
+* Change cursor theme in Debian
+
+    $ sudo update-alternatives --config x-cursor-theme
+
+
+Locale in Dapper
+================
+
+# /usr/share/i18n/SUPPORTED
+
+1. vi /var/lib/locales/supported.d/local
+2. $ locale-gen
+3. $ locale -a
+
+
+Related Links
+=============
+
+http://art.gnome.org/

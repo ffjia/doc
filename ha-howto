@@ -1,0 +1,425 @@
+#
+#   heartbeat v1.2.4 + drbd v0.7 Active/Passive High Availability (hot
+#   standby) Maxenger Howto
+#
+# $Id: ha-howto 1236 2010-02-26 08:03:35Z ffjia $
+#
+
+++ Scenario
+
+
+                             Client
+                                |
+                              Router
+                       _________|____________
+                      |                     |
+                      |   crossover/serial  |
+        *        ServerA<-------------->ServerB
+                             10.x.x.x
+                   (Primary)              (Standby)
+
+      ServerA:
+          eth0 192.168.x.x
+          eth0:0 192.168.x.z (VIP, _DO_NOT_CREATE_THIS_ALIAS_)
+          eth1 10.x.x.x
+
+      ServerB:
+          eth0 192.168.x.y
+          eth1 10.x.x.y
+
+    * OS: Debian Sarge
+    * Kernel: v2.4 (more stable)
+    * Filesystem: Reiserfs (or any other journal filesystem)
+    * Partition: at least one not-in-use partiton (not mounted)
+    * Netfilter: _MUST_ACCEPT_ incoming and outgoing traffic on 694 UDP
+                 port and those on the drbd port
+
+
+++ Packages
+
+    * heartbeat
+    * drbd0.7-utils
+    * drbd0.7-module-source
+    * drbdlinks (which is a deb file, not in Sarge pool yet)
+    * kernel-headers-${VERSION} (now ${VERSION} = 2.4.27-2-386)
+    * module-assistant
+    * dpatch
+    * gcc (which maybe already installed)
+    * rcconf
+
+
+++ Install packages and module
+
+ATTENTION: _MAKE_SURE_YOU_ARE_root_
+
+    -- Install necessary packages
+    $ aptitude install ${PACKAGES} (aptitude is recommended)
+    $ dpkg -i drbdlinks_${VERSION}.deb
+
+    -- Compile drbd module
+    $ m-a a-i drbd0.7-module-source
+
+
+++ Installation on Primary
+
+    -- Modify drbd.conf file
+
+--------------START /etc/drbd.conf------------------
+
+# global {
+    # use this if you want to define more resources later
+    # without reloading the module.
+    # by default we load the module with exactly as many devices
+    # as configured mentioned in this file.
+    #
+    # minor-count 5;
+
+    # The user dialog counts and displays the seconds it waited so
+    # far. You might want to disable this if you have the console
+    # of your server connected to a serial terminal server with
+    # limited logging capacity.
+    # The Dialog will print the count each 'dialog-refresh' seconds,
+    # set it to 0 to disable redrawing completely. [ default = 1 ]
+    #
+    # dialog-refresh 5; # 5 seconds
+
+    # this is for people who set up a drbd device via the
+    # loopback network interface or between two VMs on the same
+    # box, for testing/simulating/presentation
+    # otherwise it could trigger a run_tasq_queue deadlock.
+    # I'm not sure whether this deadlock can happen with two
+    # nodes, but it seems at least extremely unlikely; and since
+    # the io_hints boost performance, keep them enabled.
+    #
+    # With linux 2.6 it no longer makes sense.
+    # So this option should vanish.     --lge
+    #
+    # disable-io-hints;
+# }
+
+#
+# this need not be r#, you may use phony resource names,
+# like "resource web" or "resource mail", too
+#
+
+resource r0 {
+
+  protocol c;
+  # what should be done in case the cluster starts up in
+  # degraded mode, but knows it has inconsistent data.
+  incon-degr-cmd "echo '!drbd! pri on incon-degr' | wall ; sleep 60 ; halt -f";
+
+  startup {
+    # Wait for connection timeout.
+    # The init script blocks the boot process until the resources
+    # are connected. This is so when the cluster manager starts later,
+    # it does not see a resource with internal split-brain.
+    # In case you want to limit the wait time, do it here.
+    # Default is 0, which means unlimited. Unit is seconds.
+    #
+    # wfc-timeout  0;
+    # Wait for connection timeout if this node was a degraded cluster.
+    # In case a degraded cluster (= cluster with only one node left)
+    # is rebooted, this timeout value is used.
+    #
+    degr-wfc-timeout 120;    # 2 minutes.
+  }
+
+  disk {
+    on-io-error   detach;
+  }
+
+  net {
+    # this is the size of the tcp socket send buffer
+    # increase it _carefully_ if you want to use protocol A over a
+    # high latency network with reasonable write throughput.
+    # defaults to 2*65535; you might try even 1M, but if your kernel or
+    # network driver chokes on that, you have been warned.
+    # sndbuf-size 512k;
+
+    timeout       60;    #  6 seconds  (unit = 0.1 seconds)
+    connect-int   10;    # 10 seconds  (unit = 1 second)
+    ping-int      10;    # 10 seconds  (unit = 1 second)
+
+    # Maximal number of requests (4K) to be allocated by DRBD.
+    # The minimum is hardcoded to 32 (=128 kb).
+    # For hight performance installations it might help if you
+    # increase that number. These buffers are used to hold
+    # datablocks while they are written to disk.
+    #
+    # max-buffers     2048;
+
+    # The highest number of data blocks between two write barriers.
+    # If you set this < 10 you might decrease your performance.
+    # max-epoch-size  2048;
+
+    # if some block send times out this many times, the peer is
+    # considered dead, even if it still answers ping requests.
+    # ko-count 4;
+
+    # if the connection to the peer is lost you have the choice of
+    #  "reconnect"   -> Try to reconnect (AKA WFConnection state)
+    #  "stand_alone" -> Do not reconnect (AKA StandAlone state)
+    #  "freeze_io"   -> Try to reconnect but freeze all IO until
+    #                   the connection is established again.
+    on-disconnect reconnect;
+  }
+
+  syncer {
+    # Limit the bandwith used by the resynchronisation process.
+    # default unit is KB/sec; optional suffixes K,M,G are allowed
+    #
+    rate 80M;
+
+    # All devices in one group are resynchronized parallel.
+    # Resychronisation of groups is serialized in ascending order.
+    # Put DRBD resources which are on different physical disks in one group.
+    # Put DRBD resources on one physical disk in different groups.
+    group 1;
+
+    # Configures the size of the active set. Each extent is 4M,
+    # 257 Extents ~> 1GB active set size. In case your syncer
+    # runs @ 10MB/sec, all resync after a primary's crash will last
+    # 1GB / ( 10MB/sec ) ~ 102 seconds ~ One Minute and 42 Seconds.
+    # BTW, the hash algorithm works best if the number of al-extents
+    # is prime. (To test the worst case performace use a power of 2)
+    al-extents 257;
+  }
+
+  on ${SERVER_A} {
+    device     /dev/drbd0;
+    disk       /dev/${PARTITION};
+    address    10.x.x.x:7788;
+    meta-disk  internal;
+
+    # meta-disk is either 'internal' or '/dev/ice/name [idx]'
+    #
+    # You can use a single block device to store meta-data
+    # of multiple DRBD's.
+    # E.g. use meta-disk /dev/hde6[0]; and meta-disk /dev/hde6[1];
+    # for two different resources. In this case the meta-disk
+    # would need to be at least 256 MB in size.
+    #
+    # 'internal' means, that the last 128 MB of the lower device
+    # are used to store the meta-data.
+    # You must not give an index with 'internal'.
+  }
+
+  on ${SERVER_B} {
+    device     /dev/drbd0;
+    disk       /dev/${PARTITION};
+    address    10.x.x.y:7788;
+    meta-disk  internal;
+  }
+}
+
+--------------/etc/drbd.conf END-------------------
+
+ATTENTION:  ${SERVER_X}=`uname -n`
+
+
+#############THE FOLLOWING IS ONLY FOR PRIMARY###########
+
+    -- Create filesystem
+    $ drbdsetup /deb/drbd0 disk /dev/${PARTITION} internal -1
+    $ drbdsetup /dev/drbd0 primary --do-what-I-say  # StandAlone mode, it's OK
+    $ mkreiserfs /dev/drbd0 (or mkfs.ext3 /deb/drbd0; tune2fs -c -1 -i 0 /dev/drbd0)
+
+    -- Make a mountpoint
+    $ cd /
+    $ mkdir ${MOUNTPOINT}
+    $ mount /dev/drbd0 ${MOUNTPOINT}
+    $ mkdir -p ${MOUNTPOINT}/var/lib
+    $ mkdir -p ${MOUNTPOINT}/var/spool/cyrus
+
+    -- Stop Services
+        # _AFTER_YOU_HAVE_CONFIGURED_Maxenger_
+    $ /etc/init.d/slapd stop
+    $ /etc/init.d/postgresql stop
+    $ /etc/init.d/apache stop
+    $ /etc/init.d/exim4 stop
+    $ /etc/init.d/cyrus22 stop
+
+    -- Copy files to mountpoint
+    $ cp -av /var/lib/ldap ${MOUNTPOINT}/var/lib/
+    $ cp -av /var/lib/postgres ${MOUNTPOINT}/var/lib/
+    $ cp -av /var/lib/php${VERSION} ${MOUNTPOINT}/var/lib/
+    $ cp -av /var/spool/cyrus/mail ${MOUNTPOINT}/var/spool/cyrus/
+
+##############THE ABOVE IS ONLY FOR PRIMARY################
+
+ATTENTION: Note that it you _MUST_NOT_EVER_ACCESS_ the lower level
+device while you are using drbd. You _DO_NOT_MOUNT_ the lower level
+device any longer, you mount the virtual drb-device!
+
+
+    -- Modify drbdlinks.conf file
+
+----------------START /etc/drbdlinks.conf--------------------
+
+#
+#  Sample configuration file for drbdlinks
+
+#  If passed an option of 1, SELinux features will be used.  If 0, they
+#  will not.  The default is to auto-detect if SELinux is enabled.  If
+#  enabled, created links will be added to the SELinux context using
+#  chcon -h -u <USER> -r <ROLE> -t <TYPE>, where the values plugged
+#  in this command are pulled from the original file.
+#selinux(1)
+
+#  One mountpoint must be listed.  This is the location where the DRBD
+#  drive is mounted.
+mountpoint('${MOUNTPOINT}')
+
+#  Multiple "link" lines may be listed, one for each link that needs to be
+#  set up into the above shared mountpoint.  If "link()" is passed one
+#  argument, it is assumed that it is linked into that name under the
+#  mountpoint above.  Otherwise, you can specify a second argument which is
+#  the location of the file on the shared partition.
+#
+#  For example, if mountpoint is "/shared" and you call "link('/etc/httpd')",
+#  it is equivalent to calling "link('/etc/httpd', '/shared/etc/httpd')".
+link('/var/lib/ldap/')
+link('/var/lib/postgres/')
+link('/var/lib/php${VERSION}/')
+link('/var/spool/cyrus/mail/')
+
+-----------------/etc/drbdlinks.conf END----------------------
+
+
+    -- Create ha.cf file
+
+--------------START /etc/ha.d/ha.cf---------------------------
+
+#debugfile      /var/log/ha-debug
+logfile        /var/log/ha-log
+logfacility     local0
+# keepalive: how long between heartbeats?
+keepalive       2
+# warntime: how long before issuing "late heartbeat" warning?
+warntime        10
+# deadtime: how long-to-declare-host-dead?
+deadtime        30
+# Very first dead time (initdead)
+#
+# On some machines/OSes, etc. the network takes a while to come up
+# and start working right after you've been rebooted.  As a result
+# we have a separate dead time for when things first come up.
+# It should be at least twice the normal dead time.
+initdead        120
+# What UDP port to use for bcast/ucast communication?
+#udpport        694
+#serial         /dev/ttyS0  # Linux
+# Baud rate for serial ports...
+#baud           19200
+# What interfaces to broadcast heartbeats over?
+bcast           eth0 eth1
+auto_failback   on
+# node    nodename ...    -- must match uname -n
+node            ${SERVER_A}
+node            ${SERVER_B}
+# _ROUTER_OR_SWITCH_IP is better
+ping            ${IP}
+respawn hacluster /usr/lib/heartbeat/ipfail
+
+-----------------/etc/ha.d/ha.cf END-------------------------
+
+ATTENTION: You CANNOT include ANY cluster addresses in the ping
+directive.  That's not what it's for.  You should include addresses
+OUTSIDE the cluster.
+
+
+    -- Create haresources file
+
+-----------------START /etc/ha.d/haresources------------------
+
+# the IPaddr _MUST_BE_UNIQUE_
+# ${SERVER_A} is the _PRIMARY_NODE_
+${SERVER_A} ${VIP} drbddisk::r0 Filesystem::/dev/drbd0::${MOUNTPOINT}::reiserfs::defaults,noauto drbdlinks apache postgresql slapd exim4 cyrus22
+
+-----------------/etc/ha.d/haresources END----------------------
+
+ATTENTION: the haresources file _MUST_BE_IDENTICAL_ on all nodes of the
+           cluster
+ATTENTION: make sure you let _drbdlinks_START_FIRST_
+
+
+    -- Create authkeys file
+
+-----------------START /etc/ha.d/authkeys------------------------
+
+# Available methods: crc sha1, md5.  Crc doesn't need/want a key
+# sha1 is believed to be the "best", md5 next best
+# $ dd if=/dev/urandom count=4 2>/dev/null | openssl dgst -sha1
+auth 1
+1 sha1 tYpesOmeCharacteRshEre
+
+-----------------/etc/ha.d/authkeys END---------------------------
+
+
+    $ chmod 600 /etc/ha.d/authkeys
+
+ATTENTION: the authkeys file _MUST_BE_IDENTICAL_ on all nodes of the
+           cluster
+
+    -- Prevent some services from system boots up
+    $ rcconf
+
+    uncheck the these services:
+    * apache
+        * postgresql
+    * slapd
+    * exim4
+    * cyrus22
+
+    -- Copy files to Standby
+    $ scp /etc/drbd.conf ${SERVER_B}:/etc/
+    $ scp /etc/drbdlinks.conf ${SERVER_B}:/etc/
+    $ scp /etc/ha.d/ha.cf ${SERVER_B}:/etc/ha.d/
+    $ scp /etc/ha.d/haresources ${SERVER_B}:/etc/ha.d/
+    $ scp /etc/ha.d/authkeys ${SERVER_B}:/etc/ha.d/
+    $ ssh ${SERVER_B} -- "chmod 600 /etc/ha.d/authkeys"
+
+
+++ Installation on Standby
+
+################THE FOLLOWING IS ONLY FOR STANDBY##################
+
+    -- Prevent some services from system boots up
+    $ rcconf
+
+    uncheck the these services:
+    * apache
+    * postgresql
+    * slapd
+    * exim4
+    * cyrus22
+
+    -- Other configuration
+    $ cd /
+    $ mkdir ${MOUNTPOINT}
+    $ /etc/init.d/drbd start  # begin syncing
+
+################THE ABOVE IS ONLY FOR STANDBY#######################
+
+
+++ Complete installation
+
+    $ reboot  # first Primary, then Standby
+
+
+++ Appendix
+
+    -- How to generate authkeys automatically
+    $ cat <<-!AUTH > /etc/ha.d/authkeys
+    # Automatically generated authkeys file
+    auth 1
+    1 sha1 `dd if=/dev/urandom count=4 2>/dev/null | md5sum | cut -c1-32`
+    !AUTH
+
+    -- Enable DMA mode
+    $ hdparm -d1 /dev/${DISK}
+
+    -- failed when alone
+    The dirty flags are lost, since they are held in RAM only. So the
+    next time both nodes see each other, they perform a full sync.

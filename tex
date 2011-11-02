@@ -1,0 +1,21 @@
+        ========================================    
+            Tex
+        ========================================    
+
+# $Id: tex 39 2006-11-21 02:01:33Z ffjia $
+
+发信人: passionWei (Kupo's MJ), 信区: LinuxApp
+标  题: Re: ubuntu下怎么安装tex啊
+发信站: 水木社区 (Sun May 28 15:33:30 2006), 站内
+
+要装dvipdfmx要用debian的源
+而且tex-cjkfonts还有下面的问题
+
+2. latex-dvipdfm无法显示斜体
+3. latex-dvipdfmx生成的pdf在windows下用adobe reader 可以正常显示。
+   在linux下用adobe reader 7.0有时不能显示字体(编码正确，文字虽然不能
+   看见但可复制出来)。
+
+推荐的pdf生成方法:
+latex -> dvipdfmx， 文件体积小，在windows下显示效果很好，可复制粘贴
+pdflatex, 加上ccmap包后也可以复制粘贴

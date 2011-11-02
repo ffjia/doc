@@ -1,0 +1,25 @@
+        ======================================== 
+            man
+        ======================================== 
+
+# $Id: man 39 2006-11-21 02:01:33Z ffjia $
+
+Search manpage
+=============
+
+    $ man -k
+    $ apropos
+    $ whatis
+
+
+Print manpage
+=============
+
+    $ man <> | col -b | lpr
+
+    $ man -t alias | lpr -Pps
+
+    $ man -t man | ps2pdf - > man.pdf
+
+    $ gzip -d /usr/share/man/man1/ls.1.gz
+    $ man2html ls.1 > lsman.html

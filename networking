@@ -1,0 +1,198 @@
+        ========================================
+            Networking
+        ========================================
+
+# $Id: networking 1468 2011-02-10 09:46:30Z ffjia $
+
+Network control
+===============
+
+    $ sudo ifconfig eth0 <IP> netmask <NETMASK> broadcast <BROADCAST> up
+    $ sudo route add default gateway <GATEWAY>
+
+    $ sudo route del default gw <GATEWAY> dev eth0
+
+    $ sudo route add -net 192.168.2.0 netmask 255.255.255.0 dev eth0
+
+    $ sudo ip address <IP>/<CIDR> dev eth0
+    $ sudo ip route add default via <GATEWAY>
+
+    $ sudo ip route add default via 205.254.211.254 src 205.254.211.198
+
+    $ ip route show [0/0]
+
+    $ sudo vi /etc/modprobe.d/aliases
+
+        #alias net-pf-10 ipv6
+        alias net-pf-10 off
+
+    $ ethtool -g eth1
+    $ sudo ethtool -G eth1 rx 2048
+
+    $ ping -c <COUNT> -M do -s 1473 <ROUTERIP>
+
+    $ /sbin/arping -c 3 -s <YOUR_IP> <GATEWAY>
+
+    # Limit bandwidth to 20Mbit
+    $ tc qdisc add dev eth0 root tbf rate 20Mbit latency 50ms burst 1540
+
+    $ echo "blacklist ipv6" | sudo tee /etc/modprobe.d/blacklist-ipv6
+
+    $ netstat -rn -A inet6
+
+
+Checking bandwidth
+==================
+
+    # On ginger, run:
+    $ /home/bob/perf/bin/iperf -s -f M
+
+    # On the beckham node, run:
+    $ /home/bob/perf/bin/iperf -c ginger -P 4 -f M -w 256k -t 60
+
+
+Port scan
+=========
+
+* Network mapper
+
+    # TCP connect scan
+    $ nmap -sT
+
+    # Scan the host without pinging it
+    $ nmap -P0
+
+    # Send a SYN packet and watis for response
+    $ sudo nmap -sS
+
+    # Do a stealth scan using a FIN packet
+    $ sudo nmap -sF
+
+    $ sudo nmap -sP NET/MASK
+
+    # Guess the OS of remote host
+    $ sudo nmap -O IP
+
+    # Scan port 21 through 80
+    $ nmap -p 21-80
+
+    $ nmap -v
+    $ nmap -v -P0
+    $ sudo nmap -v -P0 -p21 -A
+
+
+* Netcat
+
+    # Scan host for ports 1-1024
+    $ netcat -v -z <HOST> 1-1024
+
+    # Send large file
+    # on Host A
+    $ netcat -l -p 12345 -c "cat >/path/of/file/received"
+    $ nc -l 4000 | tar xvf -
+    # on Host B
+    $ netcat -q 1 ipaddress 12345 < /path/of/file/to/send
+    $ tar -cf – . | nc target_ip 4000
+
+
+Sniff
+=====
+
+* tcpdump
+
+    # -e option allows to show MAC addresses
+    $ sudo tcpdump [-e] host <HOST> and port <PORT>
+
+    # 200 status code
+    $ tcpdump -vv -i eth0 'src port 80 and tcp[28:4] = 0x20323030'
+
+    # 400 status code
+    $ tcpdump -vv -i eth0 'src port 80 and tcp[28:4] = 0x20343030'
+
+    # GET request
+    $ tcpdump -v -i eth0 'tcp[20:4] = 0x47455420'
+
+
+FTP
+===
+
+    $ ftp -ni <<END
+    open HOST
+    user USERNAME PASSWD
+    bin
+    prom
+    cd /
+    mput *
+    close
+    bye
+    END
+
+
+    * fxp via lftp
+    put ftp://A/file -o ftp://B/file
+    get ftp://A/file -o ftp://B/file
+
+
+DNS
+===
+
+* Reverse lookups
+
+    $ dig [@DNSSERVER] -x <IP>
+
+* Show MX records
+
+    $ host -t mx <HOSTNAME>
+
+
+Network class
+=============
+
+    IP addresses net mask length
+    Class A 1.0.0.0 - 126.255.255.255 255.0.0.0 = /8
+    Class B 128.0.0.0 - 191.255.255.255 255.255.0.0 = /16
+    Class C 192.0.0.0 - 223.255.255.255 255.255.255.0 = /24
+
+    network addresses length how many
+    Class A 10.x.x.x /8 1
+    Class B 172.16.x.x - 172.31.x.x /16 16
+    Class C 192.168.0.x - 192.168.255.x /24 256
+
+
+"Autoconfiguration" Addresses
+=============================
+
+    169.254.0.0 - 169.254.255.255
+
+    Addresses in the range 169.254.0.0 to 169.254.255.255 are used
+    automatically by some PCs and Macs when they are configured to use
+    IP, do not have a static IP Address assigned, and are unable to
+    obtain an IP address using DHCP.
+
+    This traffic is intended to be confined to the local network, so the
+    administrator of the local network should look for misconfigured
+    hosts.  Some ISPs inadvertently also permit this traffic, so you may
+    also want to contact your ISP.
+
+
+Miscellaneous
+=============
+
+    $ telnet -z ssl <HOST> 443
+
+    $ curl -O http://site.com/dir/[001-100].htm
+
+    # Resume transfer
+    $ curl -C - http://scim-python.googlecode.com/files/pinyin-database-0.1.10.5.tar.bz2 -o db.tar.bz2
+
+    $ ntop -u ntop -d -P /usr/local/share/ntop -r 60 -w 1800 -i eth0,eth1 M
+
+    $ cat /etc/udev/rules.d/70-persistent-net.rules
+
+
+Related Links
+=============
+
+http://security.yale.edu/network/unix.html
+http://curl.haxx.se/docs/httpscripting.html
+http://rackerhacker.com/2008/01/24/ip_conntrack-table-full-dropping-packet/

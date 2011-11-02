@@ -1,0 +1,111 @@
+        ========================================
+            Debian Installer
+        ========================================
+
+# $Id: debian_installer 39 2006-11-21 02:01:33Z ffjia $
+
+Basics
+======
+
+* Minimal Debian packages: udebs
+
+    - Normal Debian packages (technically)
+    
+    - Not policy compliant
+    
+        + No documentation and copyright ﬁles
+        
+        + File ending .udeb
+        
+        + Reduced to minimal size
+    
+    - Types of udebs
+
+        1. Perform an installation step
+
+             * Provide a menu item (Choose language, Install the base
+               system, ...)
+
+             * Postinst script to p erform actions
+
+        2. Contain support ﬁles
+
+             * Kernel modules
+
+             * Programs (discover, busybox, ...)
+
+             * Libraries (full lib c, libparted, ...)
+
+
+* Cdebconf
+
+    - D-i runs at a given priority (normally at high).
+    
+    - Questions below the current priority are not shown (default
+      answer).
+
+
+* D-I images
+
+    - Directory installer/build in SVN
+    
+    - Build system based on make
+    
+    - Only builds initrds and kernel image
+    
+    - Run make without target to list useful targets
+
+
+* ISO image
+
+    - Netinst image:        all udebs and base system debs
+    
+    - Businesscard image:       only udebs, downloads base system from mirror
+    
+    - sid d-i:      udebs from sid, base system from Sarge
+    
+    - sarge d-i:        udebs and base system debs from Sarge
+    
+    - daily:        currently symlink to sarge d-i
+
+
+* The build directory
+    
+    - 'sources.list.udeb' is used to configure apt to download udebs
+      from a mirror.
+    
+    - If you have some udebs that are not available on your mirror yet,
+      you can drop them in 'localudebs/' and they will be used.
+
+
+* Where is the log?
+
+    Error messages are redirected to the third console. These messages
+    can also be found in /var/log/messages. After installation, this log
+    is copied to /var/log/installer/messages on your new system.  
+    
+    Other installation messages may be found in /var/log/ during the
+    installation, and /var/log/installer/ after the computer has been
+    booted into the installed system.
+
+
+Mini Howto
+==========
+
+    1. $ cd d-i/installer
+
+    # Make sure you have automake1.7, automake1.8 and libtool installed
+    2. $ dpkg-checkbuilddeps
+
+    # Optional
+    3. $ cd build/localudebs; for i in $(find ../.. -name "*.udeb"); \
+         do ln -s $i; done
+
+    4. $ fakeroot make build_netboot
+
+
+Related Links
+=============
+
+http://wiki.debian.org/DebianInstaller
+http://cdimage.debian.org/pub/cdimage-testing/

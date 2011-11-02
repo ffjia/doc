@@ -1,0 +1,57 @@
+        ========================================
+            Don't beep at me
+        ========================================
+
+# $Id: dont_beep_at_me 39 2006-11-21 02:01:33Z ffjia $
+
+To test it 
+==========
+
+    Press CTRL-G in a shell if you hear a beep then it is still on.  
+
+
+In plain linux console
+======================
+
+    $ setterm -blength 0
+
+    # Alternatively you can change the frequency of the beep to a
+    # very low value:
+    $ setterm -bfreq 10
+
+
+Working under X11    
+=================
+    
+    $ xset b off
+
+
+In shell
+========
+
+    # For Bash
+    # Has to go into /etc/inputrc or .inputrc
+    # It will not work in a .bashrc file!
+
+    set bell-style none
+
+    # For Tcsh:
+    # Put this into your .tcshrc file
+    # Just tab completion beep off:
+
+    set matchbeep = never
+
+    # Any beep off:
+    set nobeep = 1
+
+
+/etc/modprobe.d/blacklist
+========================
+
+    blacklist pcspkr
+
+
+Related Links
+=============
+
+http://www.linuxfocus.org/English/June2005/article378.shtml

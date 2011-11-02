@@ -1,0 +1,96 @@
+        ========================================
+            SSH
+        ========================================
+
+# $Id: ssh 1462 2011-02-10 09:10:41Z ffjia $
+
+Theory Parts
+===========
+
+* SSH-relay
+
+    # PC1 -> PC2
+    # From REMOTEHOST (login PC1), which is accessible through ssh
+    # by both parties
+    $ ssh -R <10022>:localhost:22 <REMOTEUSER>@<REMOTEHOST>
+
+    # On PC2
+    $ ssh <REMOTEHOST>
+    $ ssh -X -p <10022> <PC1USER>@localhost
+
+* SOCKS proxy
+
+    1. $ ssh -D 8080 <REMOTEHOST>
+    2. Set SOCKS proxy in browser to: localhost:8080
+
+    # -L is for accessing services on the remote server, -R for letting the
+    # remote box access services on your box, -D basically puts a SOCKS server
+    # on the remote server and does a -L to connect to it
+    $ ssh user@host -L 9999:192.168.0.10:3389
+    $ rdesktop 127.0.0.1:9999
+
+    $ ssh -g -N -L 20822:server2:80 root@server1 TCPKeepAlive=yes
+
+* Pipe
+
+    $ TMPFILE=${HOSTNAME}-${PID}
+
+    # Backup with remote comprsssion and storage
+    $ tar cf - <DIR> | ssh <REMOTEHOST> "gzip -c > ${TMPFILE}.tar.gz"
+
+    $ ssh <REMOTEHOST> "zcat < ${TMPFILE}.tar.gz" | tar xv
+
+* Subshell
+
+    $ ssh <REMOTEHOST> zcat ${TMPFILE}.tar.gz | ( cd <PATH>; tar xv ) | wc -l
+
+    $ ssh <REMOTEHOST> -t "vi filename"
+
+
+Uesful Tricks
+=============
+
+* SSH-Agent
+
+    $ eval `ssh-agent`
+    $ ssh-add
+
+* Create passwordless pubkey
+
+    $ ssh-keygen -t dsa -N '' -f ~/.ssh/id_dsa
+
+* Make SSH access more secure
+
+    # /etc/pam.d/sshd
+    # account required   pam_access.so
+    #
+    # pam_access module implements added security controls based on the
+    # /etc/security/access.conf
+    + : ALL : 192.168.
+    + : remote1776 : ALL
+    + : nx : ALL
+    - : ALL : ALL
+
+    # /etc/ssh/sshd_config
+    Port 16949
+    Protocol 2
+    PermitRootLogin no
+    MaxAuthTries 3
+    UsePAM yes
+
+* Secure key based access
+
+    Add "command="/bin/false",no-X11-forwarding,no-agent-forwarding,no-pty" in the
+    head of ~/.ssh/authorized_keys file
+
+
+Related Links
+=============
+
+http://www.linux.com/feature/134133
+http://www.gentoo.org/proj/en/keychain/index.xml
+http://troy.jdmz.net/rsync/index.html
+https://docs.google.com/View?docid=ajbgz6fp3pjh_2dwwwwt
+http://wiki.mandriva.com/en/Docs/SysAdmin/Networking/SSH
+http://www.eng.cam.ac.uk/help/jpmg/ssh/authorized_keys_howto.html
+http://www.ibm.com/developerworks/cn/aix/library/au-sshlocks/

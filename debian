@@ -1,0 +1,213 @@
+        ========================================
+            Debian
+        ========================================
+
+# $Id: debian 1206 2009-12-09 07:06:05Z ffjia $
+
+DPKG
+====
+
+    $ dpkg --root <PATH> -i <FOO>.deb
+
+    # Remove package once and for all
+    $ dpkg --force-all -r <PACKAGE>
+
+    $ dpkg -x foo.deb
+    $ ar -x foo.deb
+
+    # Extract a source package, just like "apt-get source"
+    $ dpkg-source -x <FOO>.dsc
+
+    $ dpkg-deb -f <FOO>.deb Version
+
+    $ dpkg-reconfigure --priority=low <PACKAGE>
+
+    $ dpkg --print-architecture
+
+
+APT
+===
+
+    # Restore startup script
+    $ sudo apt-get install --reinstall sysv-rc
+
+    $ sudo apt-get -t <CODENAME> install <PACKAGE>
+
+    $ sudo apt-get install <PACKAGE>=<VERSION>
+    $ sudo apt-get install xserver-xorg-core=1:1.0.2-0ubuntu10
+
+    $ sudo apt-get -f install
+    $ sudo dpkg --configure -a
+
+    $ sudo apt-get -o Debug::pkgProblemResolver=yes dist-upgrade
+
+    # Install packages in "Build-Depends"
+    $ apt-get build-dep <PACKAGE>
+
+    $ apt-get -b source <PACKAGE>
+
+    $ apt-get moo
+    $ aptitude moo
+    $ aptitude -vvvvvv moo
+    $ apt-build moo
+
+
+Aptitude
+========
+
+    # Show all packages user manually installed (!-R~i & !~E)
+    $ aptitude search '~i!~R~i!~E'
+
+    # Show all packages containing the word "relay" after the string
+    # "tcp" in package descriptions
+    $ aptitude search ~dtcp.*relay
+
+    # Print all packages in section net that do not start with "lib"
+    $ aptitude search \!^lib~snet
+
+    # Display all installed packages that depend on iptables
+    $ aptitude search ~i~Diptables
+
+    # Search ftp daemon
+    $ aptitude search ~Pftp-server
+
+    # Display all packages that automatically installed
+    $ aptitude search 'i~M<PACKAGE>'
+
+    # Mark packages as automatically installed or manually installed
+    $ aptitude unmarkauto <PACKAGE>
+    $ aptitude unmarkauto $(dpkg-query -W 'kernel-image-2.6.*' | cut -f1)
+
+    # Mark packages name include "lib" as automatically installed
+    $ aptitude markauto ~i~nlib
+
+    $ aptitude -F"%p#%v#" search ~R^lftp$
+
+    # Purge packages not successfully uninstalled
+    $ aptitude purge ~c
+
+    $ aptitude install nvidia-glx/experimental
+    $ aptitude install nvidia-glx=1.0.9631-1
+
+
+Apt-p2p
+=======
+
+    $ sudo aptitude install apt-p2p [0]
+    $ sed -i 's/\/\//\/\/localhost:9977\//' conf/sources.list [1]
+    $ sudoedit /etc/apt-p2p/apt-p2p.conf
+    $ sudo aptitude update
+
+
+Debconf
+=======
+
+    # View current configuration of a package
+    $ sudo debconf-show exim4-config
+
+    $ sudo dpkg-reconfigure debconf
+
+
+Apt-cache
+=========
+
+    $ apt-cache showpkg <PACKAGE>
+    $ apt-cache depends <PACKAGE>
+    $ apt-cache stats <PACKAGE>
+
+    $ apt-cache show mawk | grep "Provides\|Priority"
+
+    $ apt-cache rdepends <PACKAGE> | uniq
+
+
+Update-alternatives
+===================
+
+    $ update-alternatives --config pager
+    $ update-alternatives --display pager
+    $ update-alternatives --config x-session-manager/x-window-manager
+    $ update-alternatives --display x-window-manager
+    $ update-alternatives --display x-www-browser
+
+
+Update-rc.d
+===========
+
+    $ update-rc.d -f <SERVICE> remove
+    $ update-rc.d -f <SERVICE> start 98 2 3 4 5 .
+
+    $ update-rc.d <SERVICE> defaults
+
+
+Miscellaneous
+=============
+
+* Preventing upgrade
+
+    $ dpkg --get-selections "*" | grep -e "hold$"
+
+    A.
+    $ dpkg --get-selections \* > list
+    $ vi list
+
+        install -> hold
+
+    $ dpkg --set-selections < list
+
+    B.
+    $ echo "<PACKAGE> hold" | dpkg --set-selections
+
+
+* Clone a installation
+
+    $ sudo dpkg --get-selections | grep '[[:space:]]install$=' \
+        | awk '{print $1}' > package_list
+
+    $ sudo dpkg --clear-selections
+    $ cat package_list | xargs sudo aptitude install
+
+
+* Download new version of the PCI ID list
+
+    $ sudo update-pciids
+
+
+* Create default guide file for rcconf
+
+    $ sudo update-rcconf-guide
+
+
+* List the 30 most largest packages
+
+    $ dpkg-query -W -f='${Installed-Size}\t${Package}\n' | sort -n -r |\
+      head -n 30
+
+
+* Audit check sums of installed packages
+
+    $ debsums
+
+
+* Debian security analyzer
+
+    $ debsecan
+
+
+* setuid
+
+    $ sudo dpkg-statoverride --update --add root root 4754 /usr/bin/debpkg
+
+
+* Show packags using cdbs
+
+    $ egrep "^Build-Depends:.* cdbs" /var/lib/apt/lists/*Sources
+
+
+Related Links
+=============
+
+http://people.debian.org/~debacle/refcard/
+http://www.debianadmin.com/step-by-step-tutorial-howto-compile-kernel-in-debian-5-0-lenny.html
+http://blog.bwysystems.com/bwysystems/?p=10
+[0] http://www.ubuntugeek.com/how-to-use-apt-p2p-for-faster-upgrades-from-ubuntu-intrepid-810-to-jaunty-904.html
+[1] http://it.slashdot.org/comments.pl?sid=1196205&cid=27548025

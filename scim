@@ -1,0 +1,45 @@
+        ========================================
+            SCIM
+        ========================================
+
+# $Id: scim 1021 2009-02-23 09:50:04Z ffjia $
+
+Background
+==========
+
+# From suzhe
+* XMODIFIERS
+
+XMODIFIERS=@im=SCIM 通知 X Window applications 使用名叫 “SCIM” 的 XIM
+输入法服务器
+
+* GTK_IM_MODULE
+
+GTK_IM_MODULE=scim 使 gtk2 based applications 调用名叫
+im-scim 的输入法模块，而不是缺省的 xim 模块。Gtk2 的输入法模块通常放在
+/usr/lib/gtk-2.0/*/immodules/里面。
+
+要想让 gtk2 识别这里面的模块，还要执行 gtk-query-immodules-2.0，把输出结果保存
+到 /etc/gtk-2.0/gtk.immodules 文件中。
+注意这个文件在不同发行版里面的地方可能会不太一样。例如在 SUSE 里面是
+/etc/opt/gnome/gtk-2.0/gtk.immodules。
+
+# XXX Ubuntu 810
+# /usr/lib/gtk-2.0/2.10.0/immodule-files.d/scim-gtk2-immodule.immodules
+
+* QT_IM_MODULE
+
+QT_IM_MODULE=scim 类似于 GTK_IM_MODULE。
+
+Qterm 是 qt3 程序，GTK_IM_MODULE 根本不起作用。你要是不设
+ XMODIFIERS=@im=SCIM，除非你用 qtimmodule, 否则 qterm 根本不能用 scim。
+
+别的环境变量都是发行版自己内部使用的，意义各不相同。只有上面这三个是通用的。
+
+
+# From Invader
+
+    ~/.xsession
+
+    export XMODIFIERS=@im=SCIM
+    scim --frontend x11 --config simple --engines pinyin --daemon --no-socket

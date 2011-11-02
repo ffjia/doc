@@ -1,0 +1,14 @@
+        ======================================== 
+            Pure-ftpd            
+        ======================================== 
+
+# $Id: pure-ftpd 39 2006-11-21 02:01:33Z ffjia $
+
+# README.Debian, README.Virtual-Users.gz
+$ sudo groupadd ftpgroup
+$ sudo useradd -g ftpgroup -d /dev/null -s /etc ftpuser
+$ sudo pure-pw useradd swine -u ftpuser -d /home/user/dir
+$ sudo pure-pw show swine
+$ cd /etc/pure-ftpd/auth/
+$ sudo ln -s ../conf/PureDB 50pure
+$ sudo /etc/init.d/pure-ftpd restart

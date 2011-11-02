@@ -1,0 +1,20 @@
+        ======================================== 
+            wget
+        ======================================== 
+
+# $Id: wget 289 2007-02-08 11:15:02Z ffjia $
+
+Useful tricks
+=============
+
+* Download the whole site
+
+    $ wget -r -p -np -k <URL>
+
+
+* Download media files (in level 3)
+
+    $ wget -A mp3,mpg,mpeg,avi -r -l 3 <URL>
+
+
+    $ wget --spider -S http://abel.ee.ucla.edu/download-2.4-win32.php

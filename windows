@@ -1,0 +1,92 @@
+        ========================================
+            Windows
+        ========================================
+
+# $Id: windows 1210 2009-12-10 07:57:18Z ffjia $
+
+# Windows XP key from ICBC
+MRX3F-47B9T-2487J-KWKMF-RPWBY
+
+
+# Norton Ghost
+ghost -split=650 -clone,mode=create,src=1:2,dst=1:1 file.gho
+ghost -split=650 -clone,mode=restore,src=1:2,dst=1:1 file.gho
+
+
+# Print Page Setup
+&b The test immediately following these characters as centered
+&p Current page number
+&w Window title
+
+
+# Purges the DNS Resolver cache
+ipconfig /flushdns
+
+# Display the contents of the DNS Resolver Cache
+ipconfig /displaydns
+
+netstat -an | find ":port"
+
+net use <DEVICE> \\host\IPC$ <PASSWD> /user:<administrator>
+
+net user [USERNAME] [/del]
+
+
+# View nfo files
+chcp 437
+more file.nfo
+
+
+# Check if Windows is activated
+oobe/msoobe /a
+
+
+# About Windows
+winver
+
+# Enable Hibernate
+powercfg /hibernate on
+
+
+dir /s/b | find "windows"
+dir /s/b | find "hwo" >x.txt
+
+
+# libiconv-win32
+for /r . %a in (*.txt) do @iconv.exe -f gb2312 -t utf8 %a -o %a.utf8
+
+
+regsvr32 /u zipfldr.dll
+regsvr32 /u shmedia.dll
+rundll32.exe vobsub.dll,Configure
+
+
+# Change the AUTOCHK initiation coutdown time to the specified amount of
+# time in seconds
+chkntfs /t:0
+
+# Fix errors on the disk
+chkdsk /f
+
+
+# Firebird BBS
+* Sent whole article to clipboard
+
+    *Esc-E*
+
+* Paste whole article from clipboard
+
+    *Esc-I*
+
+* Delete all the contents of an article
+
+    1. *CTRL-U*
+    2. *CTRL-T*
+    3. *CTRL-U*
+    4. *Esc-D*
+
+
+Related Links
+=============
+
+http://support.microsoft.com/kb/928233/zh-cn

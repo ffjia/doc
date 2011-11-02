@@ -1,0 +1,38 @@
+        ========================================
+            Samba
+        ========================================
+
+# $Id: samba 1240 2010-02-26 08:05:26Z ffjia $
+
+Mount network folders on boot-up
+===============================
+
+    $ touch ~/.smbcredentials
+
+            username=myusername
+            password=mypassword
+
+    # Append the following line at the end of /etc/fstab
+
+        //192.168.0.1/linux    /media/sharename smbfs  credentials=/$HOME/.smbcredentials    0    0
+
+
+
+Sample of smb.conf
+==================
+
+    smb ports = 139 445
+    socket options = TCP_NODELAY IPTOS_LOWDELAY SO_KEEPALIVE SO_RCVBUF=8192
+    SO_SNDBUF=16384
+
+    dos charset = UTF-8
+    unix charset = UTF-8
+
+    security = share
+
+
+Command Line
+============
+
+    $ mount -t smbfs -o username=terren,password=terren,rw,uid=500 //192.168.1.251/sznews /mnt/smb/
+

@@ -1,0 +1,100 @@
+        ========================================
+            NFS
+        ========================================
+
+# $Id: nfs 1461 2011-02-10 09:10:10Z ffjia $
+
+NFS server
+==========
+
+- Service
+
+    * portmap (c/s)
+
+    * nfs
+
+        /usr/sbin/rpc.mountd Accepts the remote mount requests for the
+        server's exported file systems
+
+        /usr/sbin/rpc.nfsd User space program that starts the nfsd kernel
+        threads from the nfsd.o module that handles the local file system I/O
+        on behalf of the client systems
+
+        /usr/sbin/exportfs Responsible for reading the /etc/exports file and
+        making the exported file system information available to both the
+        kernel threads and the mount daemon. Issuing the exportfs -a command
+        will take the information in /etc/exports and write it to
+        /var/lib/nfs/xtab
+
+    * nfslock
+
+
+- Commands
+
+    $ sudo exportfs -a
+    # Reexport all directories
+    $ sudo exportfs -r
+
+    $ rpcinfo -p
+    $ nfsstat -s
+
+    $ sudo vi /etc/hosts.allow
+
+        rpcbind: 192.168.1.100
+        mountd: 192.168.1.100
+        nfsd: 192.168.1.100
+
+    $ sudo vi /etc/sysconfig/nfs
+
+        RQUOTAD_PORT=875
+        LOCKD_TCPPORT=32803
+        LOCKD_UDPPORT=32769
+        MOUNTD_PORT=892
+        STATD_PORT=662
+
+    # Allow firewall access, including portmap
+    $ sudo vi /etc/sysconfig/iptables
+
+        -A RH-Firewall-1-INPUT -p udp -m udp --dport 2049 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 2049 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -p udp -m udp --dport 111 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 111 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -p udp -m udp --dport 4000 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 4000 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -p udp -m udp --dport 32769 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 32769 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -p udp -m udp --dport 32803 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 32803 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -p udp -m udp --dport 892 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 892 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -p udp -m udp --dport 875 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 875 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -p udp -m udp --dport 662 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+        -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 662 -s 192.168.1.0/255.255.255.0 -j ACCEPT
+
+
+NFS client
+==========
+
+- Service
+
+    * portmap (c/s)
+
+
+- Commands
+
+    $ showmount -e <NFSSERVER>
+    $ sudo mount -t nfs4 nfs-server:/home /mnt
+    $ nfsstat -rc
+    $ nfsstat -c
+
+    $ grep nfs /etc/fstab
+
+        nfs-server:/home/logs /home/logs nfs udp,soft,async,noatime,users,noauto,ro 0 0
+
+
+Related Links
+=============
+
+https://wiki.archlinux.org/index.php/Nfs
+https://wiki.archlinux.org/index.php/NFSv4

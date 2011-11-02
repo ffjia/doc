@@ -1,0 +1,128 @@
+        ========================================
+            Cyrus
+        ========================================
+
+# $Id: cyrus 1178 2009-08-11 07:57:21Z ffjia $
+
+* Login admin console
+
+    $ cyradm -u <ADMIN> -a plain localhost
+    $ > cm user/<UID@DOMAIN>
+    $ > lq user/foo
+    $ > sq user/foo
+    # Give admin read access to user's mailbox
+    $ > setaclmailbox user/admin@domain user@domain read
+    # group is defined in /etc/group FIXME
+    $ > setaclmailbox user.help group:helpdesk write
+    $ > setaclmailbox user.help boss all
+    $ > lm *@domain
+    $ > help
+
+
+* Create admin mbox using expect
+
+    tempfile=$(tempfile -m600 -pexi)
+
+    $ cat > $tempfile <<EOF
+    #!/usr/bin/expect -f
+
+    # execute command
+    spawn -noecho cyradm -u $admin localhost
+
+    # log in
+    log_user 0
+    expect "*assword: " {send "$passwd\r"}
+
+    # make mailbox
+    expect "*> " {send "cm user/[lindex \$argv 0] \n"}
+    log_user 1
+
+    # log out
+    expect "*> " {log_user 0; send "exit\n"}
+    expect eof
+    EOF
+
+    $ expect $tempfile $admin@$domain > /dev/null 2>&1 || true
+    $ rm -f $tempfile
+
+
+* Virtual Doamins
+
+    # /etc/imapd.conf
+    virtdomains: yes
+    defaultdomain: example.com
+    #admins: admin user@domain.com
+
+
+* Test IMAP
+
+    $ telnet localhost 143
+        a login user passwd
+        a select mbox
+        a fetch 1 body[] [body[header]]
+        a logout
+
+
+* Test POP3
+
+    $ telnet localhost 143
+        +OK Hello there.
+        user <USER>[@DOMAIN]
+        +OK Password required.
+        pass <PASSWORD>
+        +OK logged in.
+        uidl
+        +OK
+        .
+        top
+        -ERR Invalid message number.
+        list
+        retr
+        quit
+        +OK Bye-bye.
+
+
+* SSL/TLS
+
+    By default, Cyrus will cache SSL/TLS sessions for reuse for up to 24 hours.
+    By adjusting the value of the tls_session_timeout option in imapd.conf, the
+    session caching can be disabled (0) or the expiration period shortened.
+
+
+* Support TLS
+
+    1. Create the server's private key and certificate yourself using OpenSSL
+
+        $ openssl req -new -x509 -nodes -out server.pem -keyout server.pem -days 365
+        $ chown cyrus server.pem
+
+    2. Modify imapd.conf
+
+        tls_cert_file: server.pem
+        tls_key_file: server.pem
+
+    3. Test STARTTLS by using imtest (cyrus22-clients)
+
+            $ imtest -t "" localhost
+
+
+* Authentication recommendations (account name in admins must exist on
+  whatever user database is specified by sasl_pwcheck_method)
+
+    - Mail server on a single machine
+
+        use "CRAM-MD5" or "DIGEST-MD5"
+
+    - More than one mail server
+
+        use "GSSAPI" and "Kerberos5"
+
+    - Want to use clear text password
+
+        use "saslauthd"
+
+
+Related Links
+=============
+
+http://acs-wiki.andrew.cmu.edu/twiki/bin/view/Cyrus/ExternalLinks

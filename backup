@@ -1,0 +1,68 @@
+        ========================================
+            Backup
+        ========================================
+
+# $Id: backup 1515 2011-08-03 10:10:08Z ffjia $
+
+DUMP
+====
+
+$ dump -0u -f </dev/st0> <PATH>
+
+
+RSYNC
+=====
+
+$ rsync -a -e ssh --ignore-errors --delete
+$ rsync -e ssh -axvPSH --numeric-ids --delete
+
+####################################
+# http://www.mysqlperformanceblog.com/2009/05/31/using-netcat-to-copy-mysql-database/
+rsync.cnf
+[dir]
+path = /path/to/dir
+use chroot = false
+readonly = false
+
+# Start a daemon
+$ rsync --daemon --port=1873 --config=rsync.cnf
+
+# Transfer files, dir should be writable by the "nobody" user?
+$ rsync -aHPv --port=1873 local_file remote_server::dir
+####################################
+
+
+CP
+==
+
+$ cp --backup --suffix=.bak --target-directory=/usr/bin/ \
+    debian/sudo/usr/bin/sudo*
+
+
+CPIO
+====
+
+$ gzip -dc file.cgz | cpio -idv
+$ find <PATH> | cpio -o -H crc | gzip -9c > <FOO>.cgz
+$ zcat ship.db.inx32.cpio.gz | cpio -idmv
+
+
+TAR
+===
+
+$ mkfifo tar.fifo
+$ screen -d -m sh -c 'cd /mnt/disk1; tar -cv . > $OLDPWD/tar.fifo'
+$ screen -m sh -c 'cd /mnt/disk2; tar -xv < $OLDPWD/tar.fifo'
+
+$ tar xzflp
+$ tar xzfp
+$ tar xvmf
+$ tar cf - . | ssh remotehost "cd /dest/dir;tar xf -"
+
+$ tar cvzfX <SOURCE>.tar.gz <EXCLUDEFILELIST> <DST>
+$ tar --exclue=/mnt cvf / - | (cd /mnt;tar xvf -)
+
+# Remove file in tar archive
+$ tar --delete -f tarball.tar FILE [FILE2 ...]
+
+$ tar cvf dotarchive.tar.gz \.[a-z]*

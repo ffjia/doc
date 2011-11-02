@@ -1,0 +1,68 @@
+        ========================================
+            Solaris
+        ========================================
+
+# $Id: solaris 963 2008-08-26 03:14:44Z ffjia $
+
+# Boot phases
+# SPARC-based                           # x86
+* Boot PROM phase                       BIOS
+* Boot programs phase
+* Kernel initialization phase
+* The init phase (starts /lib/svc/bin/svc.startd)
+
+
+# Change Pixels and Refresh in console mode
+ok> setenv output-device screen:r1024x768x85x24
+ok> boot -r
+
+
+# Solaris run levels
+0: Power-down
+S or s: Single-user
+1: Single-user administrative
+2: Multiuser
+3: Multiuser with NFS (Default run level)
+4: Alternative multiuser (Unused by default)
+5: Power-down (Same as 0; in addition it will automatically turn off the power)
+6: Reboot
+
+
+# Different commands for shutting down the system
+init -> Recommended for standalone systems when users will not be affected
+
+halt, poweroff -> Not recommended, because it does not shut down all the
+                  processes, not a clean shutdown
+
+reboot -> The init command is the preferred command
+
+shutdown -> Recommended for servers, because users are notified before the
+            shutdown
+
+
+# Logical device names
+# on SPARC-Based systems
+/dev/[r]dsk/c<k>t<l>d<m>s<n>
+      |       |   |   |   |
+      |       |   |   |   |_____Slice number
+      |       |   |   |_________Drive number (0 for single disk)
+      |       |   |_____________Physical bus target number
+      |       |_________________Logical control number(0 if only one controller)
+      |_________________________Block or raw disk
+
+# on x86-Based systems
+/dev/[r]dsk/c<k>d<m>s<n>
+
+
+# A nice proccess overview ala top
+$ prstat
+
+# Check cpu info
+$ psrinfo -v
+
+
+Related Links
+=============
+
+http://opensolaris.org/os/project/pkg/
+http://www.linuxformat.co.uk/modules.php?op=modload&name=News&file=article&sid=729

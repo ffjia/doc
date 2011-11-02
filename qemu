@@ -1,0 +1,102 @@
+        ========================================
+            QEMU
+        ========================================
+
+# $Id: qemu 1474 2011-02-23 09:06:18Z ffjia $
+
+Install qemu with kqemu
+=======================
+
+    $ sudo aptitude install qemu qemu-launcher kvm kqemu-common
+    $ sudo m-a a-i kqemu
+    $ sudo modprobe kqemu
+
+    - Create kqemu device when /dev/kqemu not functional
+
+    $ sudo mknod /dev/kqemu c 250 0
+    $ sudo chmod 666 /dev/kqemu
+
+
+Network bridge
+==============
+
+    # bridge-utils package required
+    #
+    #
+    1. # /etc/network/interface
+    #
+    # The loopback network interface
+    auto lo
+    iface lo inet loopback
+
+    # The bridge network interface(s)
+    auto br0
+    iface br0 inet static
+    address 192.168.1.2
+    network 192.168.1.0
+    netmask 255.255.255.0
+    broadcast 192.168.1.255
+    gateway 192.168.1.1
+    bridge_ports eth0
+    bridge_fd 9
+    bridge_hello 2
+    bridge_maxage 12
+    bridge_stp off
+
+    #auto eth0
+    #iface eth0 inet dhcp
+
+    2. # /etc/qemu-ifup
+    #
+    #!/bin/sh
+
+    echo "Executing /etc/qemu-ifup"
+    echo "Bringing up $1 for bridged mode..."
+    sudo /sbin/ifconfig $1 0.0.0.0 promisc up
+    echo "Adding $1 to br0..."
+    sudo /usr/sbin/brctl addif br0 $1
+    sleep 2
+
+    3. $ sudo qemu -hda centos45.vm -m 384 -boot c -net nic,vlan=0 -net tap,vlan=0,ifname=tap0,script=/etc/qemu-ifup
+
+
+Usage
+=====
+
+    # The "raw" is default format
+    $ qemu-img create -f raw <IMAGE> <SIZE>
+
+    # copy-on-write, qcow2
+    $ qemu-img create -f qcow2 <IMAGE> <SIZE>
+
+    # Convert qemu image to VMWare image
+    $ qemu-img convert -f raw debian.disk -O vmdk debian.vmdk
+
+    $ qemu -hda <DISKNAME> -m <RAMSIZE> -net <OPTIONS> -boot [a|c|d] -cdrom <FILE>.iso
+
+    # Redirect guest os port 22 to host os port 2222
+    $ qemu-system-ppc -hda linuxppc.qcow2 -boot c -m 512 -redir tcp:2222::22
+
+    $ virt-install --hvm --force --connect qemu:///system -n kvm -r 512 --vcpus=1 -f ~/kvm.qcow2 -s 10 --os-type=linux --os-variant=rhel5 --vnc --accelerate --network=bridge:br0 --location http://192.168.1.160:8080/yum
+
+    $ virsh --connect qemu:///system
+    $ virsh -c qemu:///system list
+
+    $ qemu -snapshot
+
+    # Ctrl-Alt-2
+    sendkey ctrl-alt-delete
+
+
+Related Links
+=============
+
+http://fabrice.bellard.free.fr/qemu/license.html
+http://www.dad-answers.com/qemu/qemu/
+http://www.cri.ch/linux/docs/sk0020.html
+http://compsoc.dur.ac.uk/~djw/qemu.html
+http://fabrice.bellard.free.fr/qemu/qemu-doc.html
+http://www.howtoforge.com/virtualization-with-kvm-on-a-fedora-11-server
+http://www.linux-kvm.org/page/Virtio
+http://www.linux-kvm.org/page/Boot_from_virtio_block_device
+

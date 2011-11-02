@@ -1,0 +1,160 @@
+        ========================================
+            GNU privacy guard
+        ========================================
+
+# $Id: gnupg 1490 2011-04-08 05:08:12Z ffjia $
+
+The Need For Message Signatures
+===============================
+
+    The first reason for message signatures is authenticity. It is a
+    largely unknown fact that the From: header of email can be trivially
+    forged. A quick glance can lead you to believe that the mail was
+    sent by someone who might not have had anything to do with the
+    message. A signature will help you determine if the mail was really
+    sent by who you think it was sent by.
+
+    The second reason for signatures is integrity. Someone who has
+    access to any piece of mail that is waiting for you (perhaps at your
+    ISP) can change the message. This could affect something as simple
+    as where you should meet someone to something as serious as which
+    bank account you should transfer money to. A signature can tell you
+    if the message was modified between the sender and your mail client.
+
+
+About deleting UIDs
+===================
+
+    Deleting uids IIRC is *not* possible, it can be that it reappears
+    through the synching of the keyservers.
+
+    (I learned so at the time and speech I learned about GPG)
+
+    Rene
+
+------
+
+    Sure it is.  It has *exactly* the effect of removing the UID.  The
+    UID remains, but is clearly marked as being revoked.  This should
+    tell everyone that the UID is no longer to be associated with the
+    key.  This is The Correct Way to remove stale UIDs AFAIK.
+
+    Stephen
+
+------
+
+    Deleting anything is worthless once it's touched the global keyring.
+    There is no way to issue a 'delete' command to keyrings, and even if
+    there were, there's no way for keyrings to propogate that command to
+    local GPG rings.  The only way to successfully take a GPG uid out of
+    circulation is by appending /more/ information to it that renders it
+    invalid: a revocation certificate.
+
+    Steve Langasek
+
+
+Generate a new key
+==================
+
+    # Good idea to perform some other action (type on the keyboard, move
+    # the mouse, utilize the disks) during the prime generation. It will
+    # generate "Full name (Comment) <Email>" format.
+    1. $ gpg --gen-key
+
+    # Assume the pub key is 1024D/B595FC37
+    2. $ gpg --send-key 0xB595FC37
+    3. $ gpg --search-key 0xB595FC37
+
+    # Move revoke_file to a medium which you can hide away
+    4. $ gpg --output <REVOKE_FILE> --gen-revoke <UID>
+    5. $ gpg [--keyserver <KEYSERVER>] --recv-keys 0xB595FC37
+
+
+Signs a public key with your secret key
+=======================================
+
+    $ gpg --sign-key <Other's pub key>
+
+    # Send a mail to the key owner (need "signing-party" package)
+
+    $ gpg-mailkeys <KEYOWENER_MAIL>
+
+    # Send all the keys to a keyserver
+    $ gpg --send-keys
+
+
+Export and import pub key
+=========================
+
+    # --armor means create ASCII armored output
+    $ gpg --export --armor --output <FOO>.asc
+    $ gpg --import <FOO>.asc
+
+    $ gpg --list-keys [UID]
+    $ gpg --list-sigs [UID]
+
+
+Encrypt data and decrypt it
+===========================
+
+    $ gpg --recipient <UID> --encrypt <FILE>
+    $ gpg --output <FILE> --decrypt <FILE>.gpg
+
+
+Make a signature or a detached signature
+========================================
+
+    $ gpg --sign -recipient <UID> -e <FILE>
+    $ gpg --detach-sign --armor <FILE>
+
+    # Verify a detached signature
+    $ gpg --verify <FILE>.asc
+
+
+Make a clear text signature
+===========================
+
+    $ gpg --clearsign <FILE>
+
+
+List all keys with their fingerprints
+=====================================
+
+    $ gpg --fingerprint <UID>
+
+
+Do interactive job
+==================
+
+    $ gpg --edit-key <UID>
+
+        > check
+        > fpr
+        > sign
+        > trust
+        > adduid
+        > uid 2
+        > primary
+        > expire
+        > revuid
+        > save
+
+    $ gpg --send-keys <UID>
+
+
+Do not add keys to default keyrings
+==================================
+
+    $ gpg --no-default-keyring --keyring trustedkeys.gpg  --import RPM-GPG-KEY-percona
+
+
+Related Links
+=============
+
+http://wiki.debian.org.tw/index.php/PGPKeysigningParty
+http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x<KEYID>
+http://pgp.mit.edu:11371/pks/lookup?op=get&search=0xB595FC37
+http://lists.gnupg.org/pipermail/gnupg-users/2001-September/010161.html
+
+
+# vim:set nofoldenable:

@@ -1,0 +1,197 @@
+        ========================================
+            Netfilter
+        ========================================
+
+# $Id: netfilter 1431 2010-12-10 07:33:00Z ffjia $
+
+* Examples
+
+    $ echo 1 > /proc/sys/net/ipv4/ip_forward
+    $ iptables -t nat -A POSTROUTING -o eth0 -s <NET/MASK> -j SNAT --to-source <GATEWAY>
+    $ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+    $ iptables -t nat -A POSTROUTING -s <NET/MASK> -d ! NET/MASK -j MASQUERADE
+
+    $ iptables -t nat -A PREROUTING -d <IP> -p tcp --dport <3389> -j DNAT --to-destination <IP>
+
+    $ iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8080
+
+    $ iptables -A INPUT -m time --timestart 8:00 --timestop 18:00 --days Mon,Tue,Wed,Thu,Fri -j ACCEPT
+
+    $ iptables -I FORWARD -s ! 192.168.1.1/32 -p tcp -m connlimit --connlimit-above 100 -j REJECT
+
+    $ iptables -A FORWARD -s 0/0 -i eth0 -d 192.168.1.58 -o eth1 -p TCP \
+         --sport 1024:65535 -m multiport --dports 80,443 -j ACCEPT
+
+    # Prevent grp owner connect to outside world
+    $ iptables -A OUTPUT -p TCP -m owner --gid-owner STAR_GID_NUM -j DROP
+
+    # Limit ssh connection freq [0]
+    $ iptables -A INPUT -i eth0 -p tcp --dport 22 -m limit --limit 1/minute --limit-burst 1 -j ACCEPT
+    $ iptables -A INPUT -i eth0 -p tcp --dport 22 --syn -j DROP
+
+    # Record the IP address of each attempt to access port 22 using the
+    # recent module
+    $ iptables -A INPUT -p tcp --dport 22 -m recent --set --name ssh --rsource
+    # Check to see if that IP address has attempted to connect 4 or more
+    # times within the last 60 seconds, and if not then the packet is
+    # accepted.
+    $ iptables -A INPUT -p tcp --dport 22 -m recent ! --rcheck --seconds 60 --hitcount 4 --name ssh --rsource -j ACCEPT
+
+    $ iptables -t mangle -I PREROUTING -m mac --mac-source FK:FK:FK.... -j DROP
+
+    # Count packets
+    $ sudo iptables -N Counter
+    $ sudo iptables -A INPUT -d <HOST> -j Counter
+    $ sudo iptables -A OUTPUT -s <HOST> -j Counter
+    $ sudo iptables -n -v -L
+
+    # Connect FTP through NAT
+    $ modprobe -a ip_conntrack_ftp ip_nat_ftp
+
+    # Backup and restore
+    $ iptables-save -c > <FILE>
+    $ iptables-restore -c < <FILE>
+
+
+* Netfilter Table
+
+    - filter (packet filter, default)
+
+    o INPUT (for packets coming into the box itself)
+    o FORWARD (for packets being routed through the box)
+    o OUTPUT (for locally generated packets).
+
+    - nat (network address translation )
+
+    o PREROUTING (for altering packets as soon as they come in)
+    o OUTPUT (for altering locally generated packets before routing)
+    o POSTROUTING (for altering packets as they are about to go out)
+
+    - mangle (network address mangling, good only after 2.4.18)
+
+    o all five built-in chains.
+
+
+* Netfilter Target
+
+    - four basic targets:
+
+    o ACCEPT means to let the packet through.
+    o DROP means to drop the packet.
+    o QUEUE means to pass the packet to userspace (if supported by the kernel).
+    o RETURN means stop traversing this chain and resume at the next
+      rule in the previous (calling) chain.
+
+    - extended targets:
+
+    o LOG turns on kernel logging.
+    o REJECT sends back an error packet and drops the packet.
+    o SNAT alters the source address of the packet and is used only in
+      the POSTROUTING chain. (nat table only)
+
+        --to-source ipaddr[-ipaddr][:port-port]
+
+    o MASQUERADE is the same as SNAT but for dynamically assigned IP
+      (dialup) connections. (nat table only)
+
+        --to-ports port[-port]
+
+    o DNAT alters the destination address of the packet and is used in
+      the PREROUTING and OUTPUT chains, and user- defined chains which are
+      only called from those chains. (nat table only)
+
+        --to-destination ipaddr[-ipaddr][:port-port]
+
+    o REDIRECT alters the destination IP address to send the packet to
+      the machine itself.
+
+        --to-ports port[-port]
+
+
+* Netfilter Commands
+
+    iptables -N chain # create a chain
+    iptables -A chain \ # add rule to chain
+
+         -t table \ # use table (filter, nat, mangle)
+
+         -p protocol \ # tcp, udp, icmp, or all
+
+         -s source-address[/mask] \
+         --sport port[:port] \ # source port if -p is tcp or udp
+
+         -d destination-address[/mask] \
+         --dport port[:port] \ # dest. port if -p is tcp or udp
+
+         -j target \ # what to do if match
+
+         -i in-interface-name \ # for INPUT, FORWARD, PREROUTING
+         -o out-interface-name # for FORWARD, OUTPUT, POSTROUTING
+
+
+* IPP2P and L7-filter
+
+    - IPP2P
+
+        The goal of the IPP2P project is to identify peer-to-peer data
+        in IP traffic.
+
+        $ iptabls -A FORWARD -i eth0 -m ipp2p --ipp2p -j DROP
+
+    - L7-filter
+
+        L7-filter is a classifier for the linux kernel's Netfilter
+        subsystem that identifies packets based on application layer
+        data.
+
+        # Block SSH Tunnel
+        $ iptables -A FORWARD -m layer7 --l7proto ssh -j DROP
+
+
+* Prevent port scan
+
+    # NMAP FIN/URG/PSH
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags ALL FIN,URG,PSH -j LOG --log-level warn
+
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags ALL FIN,URG,PSH -j DROP
+
+    # Xmas Tree
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags ALL ALL -j LOG --log-level warn
+
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags ALL ALL -j DROP
+
+    # Another Xmas Tree
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG --log-level warn
+
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+
+    # Null Scan(possibly)
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags ALL NONE -j LOG --log-level warn
+
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags ALL NONE -j DROP
+
+    # SYN/RST
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags SYN,RST SYN,RST -j LOG
+    --log-level warn
+
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+
+    # SYN/FIN -- Scan(possibly)
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags SYN,FIN SYN,FIN -j LOG --log-level warn
+
+    /sbin/iptables -A INPUT -i eth0 -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+
+    # PREVENT SYNC FLOOD
+    /sbin/iptables -N SYNFLOOD
+
+    /sbin/iptables -A SYNFLOOD -p tcp --syn -m limit --limit 1/s -j RETURN
+
+
+Related Links
+=============
+
+http://www.ipp2p.org/
+http://l7-filter.sourceforge.net/
+http://www.centos.org/docs/5/html/Deployment_Guide-en-US/ch-fw.html
+[0] http://wiki.centos.org/HowTos/Network/SecuringSSH#head-a296ec93e31637aa349538be07b37f67d836688a

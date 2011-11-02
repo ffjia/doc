@@ -1,0 +1,48 @@
+        ========================================
+            Find
+        ========================================
+
+# $Id: find 1336 2010-08-18 05:05:36Z ffjia $
+
+    $ find <PATH> -name <NAME> -print0 | xargs -0 rm -fr {} \;
+    $ find . -type f | xargs -n 1 -P 20 grep "libm.so.2"
+    $ find . -type l ! -xtype f ! -xtype d -ok rm -f {} \; [0]
+    # Delete all hidden dirs/files
+    $ find <PATH> | grep -E "*/\." | xargs rm -f {} \;
+    # Find hidden files in home directory changed in the last 5 days
+    $ find ~ -mtime -5 -name \.\*
+    $ find <PATH> -newer <FILE> -exec rm {} \;
+    # List files accessed within the past 60 minutes
+    $ find <PATH> -amin -60
+    # Delete all files that haven’t been modified for at least a week
+    $ find . -mtime +7 -print | perl -nle unlink
+    $ find . -mmin -600 -mmin +60 -type f -exec ls -l '{}' \;
+    $ find . -name "*.htm" -exec mv '{}' '{}l' \;
+    $ find <PATH> -name <NAME> | xargs -i mv {} <DIR>
+    $ find /path/to/files match_rules -exec cp '{}' /path/to/destination \;
+    $ find DIR/ -type f ! -name "*.gz" -exec cp -t DEST {} +
+    $ find . -iname "*.mp3" -execdir mid3iconv -e GBK {} +
+    $ find /usr/share/icon/tiny-gnome/12x12 -type f -exec convert {} -resize 12x12 {} \;
+    $ find <PATH> -exec md5sum {} \;
+    $ find <PATH> -type f | xargs -o vim
+    $ find <PATH> -newer <FILE1> ! -newer <FILE2>
+    $ find <PATH>  \( -name "*.mp3" -o -name "*.nfo" \)
+    $ find /sys/ -type f \( -name bind -or -name unbind -or -name new_id \) -ls
+    $ find <PATH> -not -name <FILE1>
+    $ find <PATH> -maxdepth 1 -type f
+    $ find <PATH> -perm 4755
+    $ find <PATH> -user/-group root
+    $ find <PATH> -user <USERNAME> -print0 | du -ch --files0-from=-
+    $ find . -empty -exec rm '{}' \;
+    $ find <PATH> -size n[c]
+    # Sticky-bit on world-writable directories
+    $ find / -type d -perm +2 -ls
+    # List of the non-root-owned directories outside of the user home area
+    $ find / -path /home -prune -o -type d ! -uid 0 -ls
+
+
+Related Links
+=============
+
+http://wooledge.org/mywiki/UsingFind
+[0] http://www.gentoo.org/proj/en/tex/texlive-migration-guide.xml

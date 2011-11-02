@@ -1,0 +1,104 @@
+        ========================================
+            TLS
+        ========================================
+
+# $Id: tls 1143 2009-07-10 07:26:04Z ffjia $
+
+$ openssl speed rsa
+
+Create CA
+=========
+
+    $ /usr/lib/ssl/misc/CA.pl -newca
+
+    # Generate the Server Certificate
+    # Make sure the "Organization Name" is the same with origional CA
+    $ openssl req -new -nodes -subject -keyout key.pem -out req.pem \
+      -days 365
+
+    # Sign the Server Certificate
+    $ openssl ca -out cert.pem -infiles req.pem
+
+
+Create cert
+===========
+
+    A.
+
+    $ openssl req -new -x509 -days 365 -nodes -config /etc/ssl/ssl.cnf \
+      -out cert.pem -keyout key.pem
+
+    B.
+
+    $ dd if=/dev/urandom of=/etc/ssl/ssl.rand count=1 >& /dev/null
+    $ openssl gendh -rand /etc/ssl/ssl.rand 512 >> cert.pem
+    $ openssl gendh -rand /etc/ssl/ssl.rand 512 >> key.pem
+
+
+Use fetchmail with gmail [1]
+========================
+
+    $ openssl s_client -connect pop.gmail.com:995 -showcerts
+    $ cp /etc/ssl/certs/Equifax_Secure_CA.pem Google.pem ~/.certs
+    $ c_rehash ~/.certs
+    $ openssl s_client -connect pop.gmail.com:995 -CApath ~/.certs
+
+
+Test STARTTLS
+=============
+
+    $ openssl s_client -starttls smtp -debug -connect localhost:25
+    $ openssl s_client -starttls pop -debug -connect localhost:995
+
+    $ gnutls-cli -s --x509keyfile key.pem --x509certfile cert.pem -p 25 <HOST>
+
+    #Check out cert file
+    $ openssl x509 -subject -dates -fingerprint -noout -in cert.pem
+
+
+Make a cert against SMTP server
+===============================
+
+    #Show cert
+    $ openssl s_client -connect mail2.sw-linux.com:443 -showcerts
+    $ openssl s_client -starttls smtp -connect mail.webterren.com:587 < /dev/null | openssl x509 >| cert.pem
+
+    #Create fingerprint
+    $ openssl x509 -in .certs/gmail.pem -noout -fingerprint
+
+    #Rehash
+    $ c_rehash .certs/
+
+    #Check cert
+    $ openssl s_client -connect 64.233.163.111:995 -CApath .certs/
+
+
+Using openssl[2]
+================
+
+    $ openssl s_client -connect www.ibm.com:443 2>&1 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > server.pem
+    $ openssl verify server.pem
+    $ openssl s_client  -connect www6.software.ibm.com:443 -state
+    $ openssl s_client -CAfile serverCA.pem -connect
+    $ openssl x509 -text -in roch.pem
+
+    $ openssl s_client -host imap.gmail.com -port 993
+
+
+Warning
+=======
+
+    Certain types of firewall and certain anti-virus products can
+    disrupt TLS connections. You need to turn off SMTP scanning for these
+    products in order to get TLS to work.
+
+
+Related Links
+=============
+
+http://curl.haxx.se/docs/sslcerts.html
+http://curl.haxx.se/docs/caextract.html
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=444176
+
+[1] https://mail.google.com/support/bin/answer.py?answer=13287
+[2] https://www.ibm.com/developerworks/cn/linux/l-cn-sclient/

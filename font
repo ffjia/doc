@@ -1,0 +1,66 @@
+        ========================================
+            Font
+        ========================================
+
+# $Id: font 997 2008-12-10 08:50:30Z ffjia $
+
+Font utilities
+==============
+
+    # freetype, xtt, xfs
+    $ xlsfonts
+
+    # xft
+    $ fc-list :lang=zh-cn
+    # Show font file location
+    $ fc-list :family=SimSun file
+
+    $ fc-list -v "WenQuanYi Zen Hei" lang
+
+    $ fc-match
+    $ fc-match sans/serif/mono --sort
+    $ fc-match :family=sans
+    $ FC_DEBUG=1 fc-match :family=monospace | less
+
+
+* Display Xft font
+
+    $ xfd -fa SimSun
+
+    # Display Chinese char “好”
+    $ xfd -fa SimSun -start $((16#597d)) -rows 1 -columns 1
+
+
+* Display core font
+
+    $ xfd -fn -zyec-simsun-medium-r-normal--0-0-0-0-p-0-iso8859-1
+
+
+Rationale
+=========
+
+* "Antialiasing" and "Hinting"
+
+    - Antialiasing softens the edges of each letter to make them appear
+      less jagged.
+
+    - Hinting affects the spacing and shaping of the letters.
+
+
+* Bitmap fonts, unlike the TrueType fonts used within the rest of
+  Ubuntu, don't scale beyond their original size.
+
+
+* Xorg module <=> fonts
+
+    - "bitmap": bitmap fonts (`*.bdf', `*.pcf' and `*.snf');
+    - "freetype": TrueType fonts (`*.ttf' and `*.ttc'), OpenType fonts (`*.otf' and `*.otc') and Type 1 fonts (`*.pfa' and `*.pfb');
+    - "type1": alternate Type 1 backend (`*.pfa' and `*.pfb') and CIDFont backend;
+    - "xtt": alternate TrueType backend (`*.ttf' and `*.ttc');
+    - "speedo": Bitstream Speedo fonts (`*.spd').
+
+
+Related Links
+=============
+
+http://wiki.archlinux.org/index.php/XOrg_Font_Configuration

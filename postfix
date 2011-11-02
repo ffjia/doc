@@ -1,0 +1,40 @@
+        ========================================
+            Postfix
+        ========================================
+
+# $Id: postfix 848 2008-01-24 09:57:24Z ffjia $
+
+Adjust debug level
+==================
+
+# In /etc/postfix/master.conf
+smtp      unix  -       -       -       -       -       smtp -v
+
+
+Postconf
+========
+
+    # Dump settings that went into effect
+    $ postconf -n
+
+    # Check queue
+    $ postqueue -p
+
+    $ postconf mail_version
+
+
+Delete mail from mailq
+======================
+
+    1. Check your current mail queue
+    $ postqueue -p
+
+    2. Delete all mails that come from falko@example.com or are sent to falko@example.com
+    $ mailq | tail +2 | awk 'BEGIN { RS = "" } / falko@example\.com$/ { print $1 }' | tr -d '*!' | postsuper -d -
+
+
+Postfix and gmail
+=================
+
+    $ sudo chown root.postfix sasl_passwd*
+    $ sudo chmod 0640 sasl_passwd*

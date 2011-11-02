@@ -1,0 +1,164 @@
+        ========================================
+            SVN
+        ========================================
+
+# $Id: svn 1448 2011-01-17 10:04:43Z ffjia $
+
+Setup Subversion over a network
+===============================
+
+# For Debian/Unbuntu
+1. $ sudo apt-get install subversion apache2 libapache2-svn
+2. $ mkdir /var/lib/repos
+3. $ svnadmin create /var/lib/repos
+4. $ chown -R www-data:www-data /var/lib/repos
+5. $ sudo vi /etc/apache2/mods-available/dav_svn.conf, uncomment some entries
+6. $ sudo htpasswd2 -c /etc/subversion/passwd user
+7. $ cd project/
+8. $ svn import http://localhost/svn/project -m "Initial import"
+9. $ svn co http://localhost/svn/project
+
+    * dav_svn.conf:
+
+    # dav_svn.conf - Example Subversion/Apache configuration
+    #
+    # For details and further options see the Apache user manual and the
+    # Subversion book.
+
+    # <Location URL> ... </Location> URL controls how the repository
+    # appears to the outside world.  In this example clients access the
+    # repository as http://hostname/svn/
+    <Location /svn>
+
+        # Uncomment this to enable the repository,
+        DAV svn
+
+        # Set this to the path to your repository
+        SVNPath /var/lib/repos
+
+        # The following allows for basic http authentication.  Basic
+        # authentication should not be considered secure for any
+        # particularly rigorous definition of secure.
+
+        # to create a passwd file
+        # # rm -f /etc/apache2/dav_svn.passwd
+        # # htpasswd2 -c /etc/apache2/dav_svn.passwd dwhedon
+        # New password:
+        # Re-type new password:
+        # Adding password for user dwhedon
+        # #
+
+        # Uncomment the following 3 lines to enable Basic Authentication
+        AuthType Basic
+        AuthName "Subversion Repository"
+        AuthUserFile /etc/subversion/passwd
+
+        # Uncomment the following line to enable Authz Authentication
+        # AuthzSVNAccessFile /etc/apache2/dav_svn.authz
+
+        # The following three lines allow anonymous read, but make
+        # committers authenticate themselves.
+
+        <LimitExcept GET PROPFIND OPTIONS REPORT>
+        Require valid-user
+        </LimitExcept>
+
+    </Location>
+
+
+Single user Subversion repository
+================================
+
+$ cd
+$ svnadmin create svn
+$ svn mkdir file:///home/<USER>/svn/trunk/blog -m "Create blog project"
+$ cd blog && svn import file:///home/<USER>/svn/trunk/blog -m "Initial import of \
+    blog project"
+$ rm -fr blog/ && svn checkout file:///home/<USER>/svn/trunk/blog ~/blog
+$ svn propset svn:keywords "Id" <FILE>
+
+
+Create a repo using script
+=========================
+
+#!/bin/bash
+# usage: mkproject newprojectname
+mkdir -p $1/branches $1/tags $1/trunk
+svnadmin create /path/to/repos/$1
+svn import $1 file:///path/to/repos/$1 -m "Initial import"
+rm -rf $1
+svn checkout file:///path/to/repos/$1/trunk ~/$1
+
+
+Commands in console
+===================
+
+$ svn diff -r<VERSION1>:<VERSION2> FOO [> PATCHFILE]
+
+$ svn cat -r<VERSION_NUM> <FOO> > <FOO_VER>
+
+$ svn -v log
+
+$ svn log -r<VERSION_NUM>:HEAD >> Changelog
+
+# Known version num -> unknown file
+$ svn diff -r 205:206 file:///path/to/repos | grep "^+++ "
+
+$ svn list file:///home/<USER>/svn/branches
+
+$ svn update -r<VERSION_NUMA> [FILE/DIR]
+
+# Create an unversioned copy of a tree, with no metadata in it
+$ svn export file:///home/<USER>/svn/branches
+# Export a single file
+$ svn export file:///home/<USER>/svn/trunk/file
+
+# Create a tag
+$ svn copy file:///home/<USER>/svn/branches <DST> -m ""
+
+# Backup and restore repository
+$ svnadmin dump ~/svn | gzip -9 > dump.gz
+$ svnadmin create newrepos
+$ gzip -dc dump.gz | svnadmin load ~/newrepos
+
+# Export and import -r 1:283
+$ svnadmin dump -r 1:283 /path/to/repos > repos-dumpfile
+$ svnadmin create repos; svnadmin load repos < repos-dumpfile
+
+$ svn propset svn:keywords "Id" <FOO>
+$ svn propedit svn:ignore <DIR_NAME>
+$ svn propdel "svn:keywords" <FOO>
+$ svn proplist <FOO>
+
+# Need pre-revprop-change hook execute permission
+$ svn propset --revprop -r 80 svn:log 'Add keymap <F9> to delete \
+    nested reply.' conf/vimrc
+
+
+SVN hook
+========
+
+# You have to set $PATH or use absolute path
+
+
+Inside SVN
+==========
+
+    * File permissions
+
+    Subversion does not store arbitrary file permissions. It has a
+    special case for the executable bit, as you see. If you need more
+    than that, you'll have to build Subversion yourself, from the
+    unofficial "owner-group-mode" branch:
+
+    http://svn.collab.net/repos/svn/branches/meta-data-versioning/
+
+
+Related Links
+=============
+
+http://www.ibm.com/developerworks/cn/opensource/os-subversion/
+http://www.ibm.com/developerworks/cn/java/j-lo-apache-subversion/index.html
+http://www.ibm.com/developerworks/cn/java/j-lo-svk/
+http://svnbook.red-bean.com/en/1.1/ch07s04.html
+http://www.rainsts.net/article.asp?id=1028

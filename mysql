@@ -1,0 +1,125 @@
+        ========================================
+            MySQL
+        ========================================
+
+# $Id: mysql 1466 2011-02-10 09:30:49Z ffjia $
+
+Cmdline Magic
+=============
+
+{{{
+$ mysqladmin -u root -p create <DATABASE>
+
+$ mysqladmin -u root password <PASSWORD>
+$ mysqladmin -h <HOST> -u root password <PASSWORD>
+
+$ mysql -e "SET NAMES 'GBK'; SELECT * FROM table INTO OUTFILE 'dir/t.sql'" db
+$ mysql -e "SET CHARACTER_SET_DATABASE=UTF8; SET FOREIGN_KEY_CHECKS=0; SET SQL_LOG_BIN=0; SET UNIQUE_CHECKS=0; LOAD DATA LOCAL INFILE '$PWD/t.sql' INTO TABLE t" db
+$ mysqldump --no-autocommit --no-create-info -u root db table > t.sql
+
+$ mysql -e "SET CHARACTER_SET_DATABASE=GBK; START TRANSACTION; SOURCE t.sql; COMMIT;" db
+$ mysql -e "SET CHARACTER_SET_DATABASE=UTF8; LOAD DATA INFILE 'dir/t.sql' INTO TABLE table" db
+
+$ mysqlbinlog /data/new_mysql/NAME--bin.000001 --start-datetime='2010-10-22 04:00:00' \
+  --stop-datetime='2010-10-22 16:00:00' | mysql -u root -ppass
+}}}
+
+
+mysql>
+=======
+
+{{{
+# Using the same format as for the GRANT statement
+# DROP USER does not automatically close any open user sessions.
+mysql> DROP USER 'repl'@'host';
+
+mysql> SHOW GRANTS FOR 'root'@'localhost';
+
+# Replication (On Master)
+mysql> GRANT REPLICATION SLAVE ON *.* TO 'repl'@'host' IDENTIFIED BY 'password';
+mysql> GRANT SUPER ON *.* TO 'repl'@'host' IDENTIFIED BY 'password';
+mysql> GRANT RELOAD ON *.* TO 'repl'@'host' IDENTIFIED BY 'password';
+mysql> FLUSH TABLES WITH READ LOCK;
+mysql> SHOW MASTER STATUS;
++------------------+----------+--------------+------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++------------------+----------+--------------+------------------+
+| mysql-bin.000XXX |  YYYYYYY |              |                  |
++------------------+----------+--------------+------------------+
+1 row in set (0.00 sec)
+mysql> UNLOCK TABLES;
+
+# Copy datafiles
+$ time rsync -e ssh -a --exclude=lost+found --compress local_data/ host:/data/
+
+# Replication (On Slave)
+mysql> CHANGE MASTER TO MASTER_HOST='master_host', MASTER_USER='repl', MASTER_PASSWORD='password', MASTER_LOG_FILE='mysql-bin.000XXX', MASTER_LOG_POS=YYYYYYY;
+mysql> START SLAVE;
+
+mysql> STOP SLAVE;
+mysql> SET GLOBAL SQL_SLAVE_SKIP_COUNTER = 1;
+mysql> START SLAVE;
+
+mysql> STOP SLAVE;
+mysql> SET SQL_LOG_BIN=0; ALTER TABLE se_url_content ADD `mainimg` varchar(255) DEFAULT NULL;
+mysql> START SLAVE;
+
+# Compress innodb table
+mysql> ALTER TABLE t ROW_FORMAT COMPRESSED KEY_BLOCK_SIZE=4;
+
+# Total size per engine per database
+mysql> SELECT TABLE_SCHEMA, ENGINE, COUNT(*) AS count_tables,
+         SUM(DATA_LENGTH+INDEX_LENGTH) AS size,
+       SUM(INDEX_LENGTH) AS index_size FROM information_schema.TABLES
+       WHERE TABLE_SCHEMA NOT IN ('mysql', 'INFORMATION_SCHEMA')
+         AND ENGINE IS NOT NULL GROUP BY TABLE_SCHEMA, ENGINE
+
+# Evil replication
+mysql> system gdb -p $(pidof mysqld)
+                       -ex "set opt_log_slave_updates=1" -batch
+mysql> SHOW VARIABLES LIKE 'log_slave_updates';
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| log_slave_updates | ON    |
++-------------------+-------+
+1 row in set (0.00 sec)
+
+# Get history of table sizes
+mysql> USE stats;
+
+mysql> CREATE TABLE `tables` (
+    `DAY` date NOT NULL,
+    `TABLE_SCHEMA` varchar(64) NOT NULL DEFAULT '',
+    `TABLE_NAME` varchar(64) NOT NULL DEFAULT '',
+    `ENGINE` varchar(64) DEFAULT NULL,
+    `TABLE_ROWS` bigint(21) UNSIGNED DEFAULT NULL,
+    `DATA_LENGTH` bigint(21) UNSIGNED DEFAULT NULL,
+    `INDEX_LENGTH` bigint(21) UNSIGNED DEFAULT NULL,
+    `DATA_FREE` bigint(21) UNSIGNED DEFAULT NULL,
+    `AUTO_INCREMENT` bigint(21) UNSIGNED DEFAULT NULL,
+    PRIMARY KEY(DAY,TABLE_SCHEMA,TABLE_NAME),
+    KEY(TABLE_SCHEMA,TABLE_NAME)
+    ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+mysql> INSERT INTO stats.tables SELECT DATE(NOW()),TABLE_SCHEMA,TABLE_NAME,ENGINE,TABLE_ROWS,DATA_LENGTH,INDEX_LENGTH,DATA_FREE,AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('mysql', 'information_schema');
+}}}
+
+
+Related Links
+=============
+
+http://dev.mysql.com/doc/refman/5.1/en/create-table.html
+http://www.mysqlperformanceblog.com/2006/08/21/using-lvm-for-mysql-backup-and-replication-setup/
+http://mysqldump.azundris.com/archives/68-Monitoring-MySQL.html
+http://monty-says.blogspot.com/2008/11/oops-we-did-it-again-mysql-51-released.html
+http://www.mysqlperformanceblog.com/2008/11/24/how-percona-does-a-mysql-performance-audit/
+http://code.google.com/p/google-mysql-tools/wiki/Mysql5Patches
+http://lists.mysql.com/mysql/215844
+http://www.innodb.com/doc/innodb_plugin-1.0/innodb-compression.html
+http://dev.mysql.com/tech-resources/articles/mysql_5.1_partitioning_with_dates.html
+http://www.percona.com/docs/wiki/percona-xtrabackup:innobackupex:how_to_recipes
+http://dom.as/2009/07/30/evil-replication-management/
+
+
+# vim600:set foldmethod=marker:

@@ -1,0 +1,48 @@
+        ========================================
+            Cobbler
+        ========================================
+
+# $Id: cobbler 1458 2011-02-10 08:16:42Z ffjia $
+
+$ rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+$ yum install -y dhcp syslinux cobbler
+
+$ /etc/init.d/httpd start
+$ /etc/init.d/xinetd start
+$ /etc/init.d/cobblerd start
+$ cobbler check
+$ cobbler get-loaders
+$ vi /etc/cobbler/settings
+    manage_dhcp: 1
+    next_server: cobbler_ip
+    server: cobbler_ip
+$ vi /etc/cobbler/dhcp.template
+    subnet *
+
+$ cobbler import --path=/mnt/dvd --name=centos55
+$ cobbler report
+$ cobbler profile add --name=webserver --distro=centos55-x86_64 --kickstart=/var/lib/cobbler/kickstarts/webserver.ks
+$ cobbler profile report --name=webserver
+$ cobbler system add --name=cozilla --profile=webserver --mac=52:54:00:59:ba:04 --ip=192.168.1.253 --hostname=cozilla.tld --gateway=192.168.1.5 --static=1
+$ cobbler system edit --name=compute1 --interface=eth1 --static=1
+$ cobbler sync (restart dhcpd)
+$ cobbler repo add --name=Centos-5.1-i386-CENTOSPLUS --mirror=ftp://ftp.sunet.se/pub/Linux/distributions/centos/5.1/centosplus/i386/
+$ cobbler reposync
+
+(iptables)
+-A RH-Firewall-1-INPUT -i eth1 -s 10.36.1.0/24 -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+-A RH-Firewall-1-INPUT -i eth1 -s 10.36.1.0/24 -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+-A RH-Firewall-1-INPUT -i eth1 -s 10.36.1.0/24 -p udp --dport 69 -j ACCEPT
+-A RH-Firewall-1-INPUT -i eth1 -s 10.36.1.0/24 -m state --state NEW -p udp --dport 123 -j ACCEP
+
+$ virt-install --hvm --connect qemu:///system -n cozilla -r 512 --vcpus=1 --file=/root/cozilla.img --file-size=5 --os-type=linux --os-variant=rhel5 --vnc --accelerate --network=bridge:br0 --mac=52:54:00:78:19:6F --pxe
+
+
+Related Links
+=============
+
+http://number9.hellooperator.net/articles/2009/03/16/pxe-virtual-network-with-virtualbox-and-cobbler
+http://hutuworm.blogspot.com/2008/08/cobblerlinux.html
+http://serverfault.com/questions/123144/managing-an-application-across-multiple-servers-or-pxe-vs-cfengine-chef-puppet
+http://terrarum.net/administration/cobbler.html
+https://fedorahosted.org/cobbler/wiki/KickstartSnippets

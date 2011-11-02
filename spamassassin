@@ -1,0 +1,39 @@
+        ========================================
+            SpamAssassin
+        ========================================
+
+# $Id: spamassassin 839 2008-01-21 09:59:23Z ffjia $
+
+INSTALL
+=======
+
+    1. Alternatively install debian package "spamassassin"
+    $ perl -MCPAN -e 'shell'
+    cpan> install Mail::SpamAssassin
+
+
+Rules
+=====
+
+    rawbody BECAUSE_OPTIN           /because you opted-in/i
+    score   BECAUSE_OPTIN           5.0
+
+    header  ITS_DEREK               ALL =~ /derek\@farmprints.com/i
+    score   ITS_DEREK               -100
+
+    $ spamassassin --lint
+
+
+Update
+======
+
+    $ sudo sa-update
+
+
+Related Links
+=============
+
+http://mywebpages.comcast.net/mkettler/sa/SA-rules-howto.txt
+http://wiki.apache.org/spamassassin/CustomRulesets
+http://wiki.apache.org/spamassassin/UsingSpamAssassin
+http://www.ccert.edu.cn/spam/sa/Chinese_rules.htm

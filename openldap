@@ -1,0 +1,68 @@
+        ========================================
+            OpenLDAP
+        ========================================
+
+# $Id: openldap 972 2008-10-23 08:16:35Z ffjia $
+
+Commands in console
+===================
+
+    $ slapadd -b <BASEDN> -l <LDIF_FILE>
+    $ slapindex -b <BASEDN>
+
+    # dump the directory to a file
+    $ slapcat -l <LDIF_FILE>
+
+
+OpenLDAP hints
+==============
+
+* Inside OpenLDAP
+
+    Slapd itself. When you run slapd with both -f and -F specified, it
+    will convert all of the slapd.conf and any included files into LDIF.
+    Also any of the slap tools will do the same. slapacl will do it in
+    2.3.3beta without invoking a lot of extraneous functions; slaptest
+    works in the current HEAD and 2.3 candidate.  Then you can issue an
+    ldapsearch against the config backend to retrieve the individual
+    schema entries, or just copy the files directly out of the cn=config
+    file hierarchy.
+
+
+* About "rootpw" attribute
+
+    If you are using in-directory passwords, then passwords are held in
+    userPassword attributes. If you are using rootpw configuration
+    option, then rootpw option holds the password. If you are using some
+    external password store, the actual passwords are held in that
+    external password store. You can, of course, use any combination of
+    in-directory, rootpw, and external passwords.
+
+    On the server side the debian "rootdn" has its password assigned in
+    the DIT itself using the userPassword attribute like any other user.
+    To change it you have to use ldappasswd or similar.
+
+
+* How to get the search filters
+
+    A simple way to determine the search filters used by any LDAP client
+    is to enable connection logging on your directory server. OpenLDAP
+    uses log level 256 for this purpose. Another possibility is to use a
+    network traffic-monitoring tool such as Ethereal that can decode
+    LDAP requests and replies.
+
+
+* slapadd
+
+    Just a quick note, slapadd does indexing if you have them defined,
+    so there is generally no reason to run slapindex after running
+    slapadd.  Plus if you have properly configured your DB_CONFIG file,
+    it will be faster to slapadd with indexing than to slapadd then
+    index.
+
+
+Related Links
+=============
+
+http://www.howtoforge.com/openldap-samba-domain-controller-ubuntu7.10
+http://wiki.debian.org/LDAP/PAM

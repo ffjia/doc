@@ -1,0 +1,30 @@
+        ========================================
+            Mutt
+        ========================================
+
+# $Id: mutt 1486 2011-03-31 13:27:04Z ffjia $
+
+* Including this header:
+
+    X-PGP-Key: http://solidlinux.com/~justin/pubkey.asc
+
+
+* Call mutt without conf files
+
+    $ mutt -n -F /dev/null
+
+
+* Find default mailcap_path [0]
+
+    $ mutt -nF /dev/null -Q mailcap_path
+
+
+Related Links
+=============
+
+http://wiki.mutt.org/index.cgi?MuttFaq/Attachment
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=340405
+http://www.mutt.org/doc/manual/manual-4.html
+http://wiki.mutt.org/?DebugConfig
+http://www.mail-archive.com/mutt-users@mutt.org/msg29730.html
+[0] http://durak.org/sean/pubs/software/mutt/mimesupport.html

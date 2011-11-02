@@ -1,0 +1,51 @@
+        ========================================
+            Devtodo
+        ========================================
+
+# $Id: devtodo 39 2006-11-21 02:01:33Z ffjia $
+
+* Add a note (will prompt for a note if one is not supplied)
+
+    $ todo -a [TEXT] [-p <PRIORITY>]
+
+
+* Displaying *all* items
+
+    $ todo all
+
+
+* Display only those items with the *word* in them
+
+    $ todo /<KEYWORDS>
+
+
+* Define the notes that are displayed
+
+    $ todo -f done,-children,+low
+
+
+* Change  the  parent  of  the  first item index to the second item index
+
+    $ todo -R <INDEX>[,<INDEX>]
+
+
+* Edit the note that is indexed by the given number
+
+    $ todo -e <INDEX>
+
+
+* Remove the given items
+
+    $ tdr <INDICES>
+    $ todo --remove <INDICES>
+
+
+* Mark the specified items as being done
+
+    $ tdd <INDICES>
+    $ todo -d <INDICES>
+
+
+* Generate a typical TODO output text file from a Todo DB
+
+    $ todo -T

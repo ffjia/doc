@@ -1,0 +1,218 @@
+        ========================================
+            D'oh
+        ========================================
+
+# $Id: d_oh.txt 866 2008-02-22 08:45:44Z ffjia $
+
+* Let the pioneers take the arrows.
+
+* Allow me to shed light on the matter ...
+
+* This document comes without warranty of any kind!
+
+* I do not issue any guarantee that this will work for you!
+
+* I never met one made me want to give up all the others.
+
+* I feel much more at home in Emacs.
+
+* Netstat is my first line of defense against intruders.
+
+* So you are leaving the door open?
+
+* To me, the GPL really boils down to "I give out the code, I want you to do
+  the same."
+
+* We believe this price is worth paying.
+
+* The remainder of this paper is structured as follows:
+
+* Above all else, be sure not to let time completely get away from you.
+
+* Be warned.
+
+* If you tell the list which package this is, then we shall not have to look at
+  our crystal balls...
+
+* Indeed, it's become something of a joke that the only things you can't avoid
+  in life are death, taxes and Ubuntu reviews.
+
+* You never get a second chance to make a first impression.
+
+* Ubuntu deserves 9 stars on a scale of 10.
+
+* Go check if other people have done that already so that you don't have to
+  reinvent the wheel.
+
+* Tough luck, but shit happens.
+
+* This is not rocket science, use your mind :)
+
+* If we can't measure it, it doesn't exist.
+
+* I never met one made me want to give up all the others.
+
+* Your true value depends entirely on what you are compared with.
+
+* Three factors decide your worth:
+
+    the need for your work; your ability to do the job; the difficulty of
+    replacing you.
+
+* Amarok can play anything, and it's rock solid.
+
+* Installing Xen on Fedora core 6 is like taking candy from a baby.
+
+* Xen remains a relatively immature product today, however, and not one to be
+  used by those faint of heart.
+
+* Installation on a remote host is not for the faint of heart.
+
+* The default Ubuntu wallpaper, Lagoon, is a love-it-or-hate-it affair.
+
+* Theory is nice, but how about the real world?
+
+* This is the last resort if something goes wrong.
+
+* You really don't get it, do you?
+
+* If you get technical, you better do it correctly ;)
+
+* This guide will walk you through installing and configuring everything
+  you need for sending and receiving email.
+
+* I do not fly the Ubuntu flag in my front yard.
+
+* How I would regard this? As totally, utterly, and terminally stupid,
+  of course!
+
+* Now I don't mean to speak evil of Ubuntu :-)
+
+* I visited various RPM distributions, including Red Hat, Mandrake, and
+  SUSE, flirted with Gentoo, and jumped on the Ubuntu bandwagon, but I
+  could never find a single place to settle -- until I tried Arch Linux.
+
+* I think you hit the nail on the head.
+
+* In many instances, it really beats the pants off bash's Ctrl-r.
+
+* If you're not afraid of getting your hands dirty with the command line.
+
+* Please watch cartoons to increase your mental state.
+
+* Geeks are the ones, that make nerds look bad. Geeks are not only ugly,
+  but they are morons too. They lack hygiene, they never dated a girl,
+  they wear glasses and suspenders, they study some very boring stuff
+  with computers and one day, they are rich mother****ers with model
+  girlfriends and a yacht.
+
+* Sorry, my brain was apparently not fully engaged when I wrote that.
+
+* Hell hath no fury like a woman scorned.
+
+* I made up in my mind that warnings should be cured at all times, not
+  ignored/suppressed.
+
+* Okay...newbie eats crow.
+
+* So? I don't give a rat's ass.
+
+* Did you just flip me off?
+
+* You just flipped me the bird.
+
+* Don't flip me off, you son of a bitch.
+
+* He opens the door, turns around and gives Cartman the finger.
+
+* ...Oh Lord, Kumbaya.
+
+* Hey, who's droppin' bombs in there?! How about a courtesy flush?!
+
+* That's über-cool
+
+* We sense a soul in search of answers.
+
+* Shade and sweet water (dig in, you will find something good)
+
+* THOU SHALT TURN OFF THY CELL PHONE.
+
+* Dump that zero and get yourself a hero.
+
+* Paravirtualization is a $10 word that means it gives the VM access to some
+  system devices with virtual devices.
+
+* Early to bed, early to rise, makes a man healthy, wealthy and wise.
+
+* By attacking from the bottom, where Microsoft can no longer successfully
+  compete, Linux will finally cut itself a large slice of the desktop market
+  pie.
+
+* Unfortunately, most hunger relief programs are simply tax reduction scams.
+  People donate millions of dollars to these 'aid' agencies, who spend 99% on
+  salaries and other fancy stuff, and then deliver a few thousand tons of
+  maize to some harbour in Africa, where it gets dumped on the dock to rot and
+  get eaten by rats.
+
+* Thanks for the nudge.
+
+* Please note that this article will focus on the user-visible side of the
+  fence; I am a user, not a developer. Please take this into account.
+
+* You get a resounding "YES" from me.
+
+* Unsurprisingly, the reaction of distributions was a mixed bag.
+
+* Sometimes the best way to get to know something is just to stick your hands
+  under the hood and get 'em dirty -- with a little guidance, of course.
+
+
+==============================================================================
+
+* If I Recall/Remember Correctly
+
+* For Your Information
+
+* In My Humble Opinion
+
+* Rolling On The Floor Laughing
+
+* There Ain't No Such Thing As A Free Lunch
+
+* (if memory doesn't fail me ;))
+
+* Here are a few things that I remember off the top of my head:
+
+* cheers and jeers/pros and cons
+
+
+==============================================================================
+
+* C'est la vie!
+
+* bonjour monde
+
+* bonswa (good afternoon, good evening)
+
+* Mea Culpa (my fault)
+
+* Paris ne s'est pas fait en un jour (Rome was not built in one day)
+
+* Voila
+
+* Poppl Laudatio Condensed
+
+* Longum iter est per preaecepta, breve et efficax per exempla!
+
+* Udo Rader
+
+* TU SEI TUTTA LA MIA VITA (you're all my life)
+
+* CANTO PER TE (I sing for you)
+
+* Venti, Vidi, Vici
+
+* 运数终时，智慧之镜也蒙尘垢。
+
+* Ay, caramba!
+

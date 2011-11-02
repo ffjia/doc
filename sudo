@@ -1,0 +1,30 @@
+        ======================================== 
+            Sudo
+        ======================================== 
+
+# $Id: sudo 434 2007-06-24 09:26:06Z ffjia $
+
+$ sudo visudo
+%admin ALL=(ALL) NOPASSWD:ALL
+ffjia  ALL=NOPASSWD: /bin/mount, /bin/umount
+
+The version of sudo that ships with Debian by default resets the
+environment, as described by the "env_reset" flag in the sudoers file.
+
+This implies that all environment variables are removed, except for
+HOME, LOGNAME, PATH, SHELL, TERM, DISPLAY, XAUTHORITY, XAUTHORIZATION,
+LANG, LANGUAGE, LC_*, and USER.
+
+
+# Explicitly destroy sudo session
+$ sudo -K
+
+
+# Open a root shell
+$ sudo -s -H
+
+
+# Read password from stdin
+$ sudo -S <COMMAND> <<EOF
+SECRET_PASSWORD
+EOF

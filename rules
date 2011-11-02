@@ -1,0 +1,93 @@
+        ========================================
+            Feifei Jia's text writing rule
+        ========================================
+
+# $Id: rules 1481 2011-03-03 08:30:55Z ffjia $
+
+------------------------
+Section 1 - Introduction
+------------------------
+
+
+Conventions used
+================
+
+# User type word
+<UPPER WORDS>
+# Optional
+[]
+# Like comment
+()
+
+# Key press
+*CTRL+L* *BACKSPACE* *ESC* *TAB* *DEL* *ENTER*
+
+# Comment
+Long comment should have punctuation mark
+
+# Something else
+Better not use Chinese
+
+
+                       Outline
+          Fundamental Concepts
+Concepts in Subversion and CVS
+         Practicing Subversion
+             Advantages to CVS
+                       Summary
+
+
+* 第二人称统一使用“您”
+* 中文和英文之间保留一个半角空格
+* 标点符号中括号使用半角，其余采用全角
+* 脚本、命令与其中的注释保留英文，不翻译
+
+192.168.1.0/24
+
+sudo
+
+Copy and License
+
+Disclaimer
+
+Introduction
+
+
+Examples blah
+=============
+
+* List
+
+Blah blah.
+
+    $ command
+
+    - Title
+
+        + subtitle
+
+            Blah [1, 3]
+
+                ++ sub subtitle
+
+
+##
+# Subtitle
+##
+
+                      -=-=-=-=-=-=-=-=-=-=-=-
+
+Table 1 presents an overview of
+
+Table 2 demonstrates the
+
+
+Gotchas (well, they got me)
+===========================
+
+
+Related Links
+=============
+
+[1] http://www.domain.com
+[2] http://www.domain.com

@@ -1,0 +1,26 @@
+        ========================================
+            Ubuntu
+        ========================================
+
+# $Id: ubuntu 600 2007-08-20 02:00:51Z ffjia $
+
+Blah blah
+=========
+
+* Using kubuntu splash
+
+    $ sudo update-alternatives --config usplash-artwork.so
+    $ sudo mkinitramfs -o <INITRD-FILE>
+
+
+* Package repositories
+
+    - Main, Restricted  ->  Officially supported free software
+    - Universe  ->  Not officially supported free software
+    - Multiverse    ->  Nonfree software
+
+
+Related Links
+=============
+
+https://wiki.ubuntu.com/LaptopTestingTeam

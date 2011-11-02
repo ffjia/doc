@@ -1,0 +1,190 @@
+        ========================================
+            Linux
+        ========================================
+
+# $Id: linux 1492 2011-04-08 05:22:15Z ffjia $
+
+$ lsof -i :22
+$ lsof -p <PID>
+$ lsof -c <PROCESS>
+
+$ ps u -C Xorg  # Get the UID
+$ ps ejH
+$ ps -eo pid,tid,class,rtprio,ni,pri,psr,pcpu,stat,wchan:14,comm
+$ ps -o etime,time,pcpu,cmd -u ffjia
+$ ps -eo user,pcpu,pid,cmd | sort -n -r -k2 | head -6
+$ ps -A u --sort -rss
+$ ps -e -o comm= -o %mem= | sort -nrk2 | head
+$ ps -e -o pid,args --forest
+$ ps -p 1,2
+$ ps -fp $SSH_AGENT_PID
+
+$ strace stardict >& log
+$ strace firefox 2>&1 | grep font
+
+* Show info every 2 seconds, only list 10 entries
+$ sar -b 2 10
+
+* Print processe env
+$ sed 's/\o0/\n/g' /proc/pid/environ
+
+* Display in access rights in octal
+$ stat -c "%a" <FILE>
+
+$ last -xf /var/run/utmp (<RUNLEVEL>)
+
+$ rdesktop -u <USER> -p <PASSWD> -a 24 -g 95% -r sound:local <HOST>
+$ rdesktop -u <USER> -p <PASSWD> -r clipboard:PRIMARYCLIPBOARD <IP>:<PORT>
+$ rdesktop -r printer:lq300k="EPSON LQ-300K" <HOST>
+
+* Check if CD is damaged
+$ dd if=/dev/hdc of=/dev/null
+
+* Show hidden and associated files/folders
+$ sudo mount /media/cdrom0/ -o unhide
+
+* Make disk image
+$ dd if=/dev/sdb of=/images/sdb.image bs=4096 conv=noerror,sync
+or
+$ dd_rescue /dev/sdb /images/sdb.image -b 65536 -B 512
+
+* Sending a USR1 signal to a running `dd' process makes it print I/O statistics
+  to standard error and then resume copying
+$ dd if=/dev/zero of=/dev/null& pid=$!
+$ kill -USR1 $pid
+18335302+0 records in 18335302+0 records out 9387674624 bytes (9.4 GB) copied,
+34.6279 seconds, 271 MB/s
+
+* Create a 1GB sparse file or resize an existing file to 1GB without overwriting
+$ dd if=/dev/zero of=mytestfile.out bs=1 count=0 seek=1G
+
+* Create an image of the entire master boot record (including the partition table)
+$ dd if=/dev/sda of=/home/sam/MBR.image bs=512 count=1
+
+* Create an image of only the boot code of the master boot record (without the partition table)
+$ dd if=/dev/sda of=/home/sam/MBR_boot.image bs=446 count=1
+
+$ cdrecord -scanbus dev=ATAPI:
+$ hal-device `hal-find-by-capability --capability storage.cdrom`
+
+$ sudo lshw -class disk
+
+# Screen running right after connecting to a remote host
+$ ssh <USERNAME>@<REMOTE_HOST> -t screen -R -D
+
+$ screen -d -m sh -c "while true; do arping -c 2 192.168.161.1; sleep 5; done"
+
+* Convert audio file to mp3
+$ mkfifo pipe.wav
+$ screen -d -m mplayer ... -ao pcm:file=pipe.wav
+$ screen -m lame ... pipe.wav pipe.mp3
+
+$ mac <SAMPLE.ape> /dev/stdout -d | lame -h -V - -> <SAMPLE.mp3>
+
+* Playing Sound Remotely with XDMCP
+# Using the arts server on the remote machine setup the arts daemon
+$ artsd -n -u -p 5001
+# Once the server is started change to the X display of the remote machine
+$ export ARTS_SERVER=ipofcurrentsystem:5001
+$ xmms &
+
+* Create a device so the 21st partition can be initialized
+$ cd /dev
+$ mknod hda21 b 3 21
+$ chgrp disk hda21
+$ chmod 660 hda21
+
+* Create software raid5
+$ mdadm –create –verbose /dev/md0 –level=5 –raid-devices=4 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sde1
+$ cat /proc/mdstat
+$ mkfs.ext3 -m 1 -T largefile /dev/md0
+$ echo "DEVICE /dev/sdb /dev/sdc /dev/sdd /dev/sde" > /etc/mdadm.conf
+$ mdadm -detail -scan
+$ mdadm -detail -scan >> /etc/mdadm.conf
+
+* Show partition type
+$ file -s
+
+# UUID
+$ /lib/udev/vol_id [OPTIONS] <DEVICE>
+$ /sbin/vol_id
+
+* Lock user on pts/2 temporarily
+$ skill -STOP pts/2
+* Unlock user
+$ skill -CONT pts/2
+
+* Keep CTRL-S and CTRL-Q from working
+$ stty start undef
+$ stty stop undef
+
+* Shutdown system in other way
+$ echo "1" > /dev/watchdog
+
+$ echo s >/proc/sysrq-trigger #sync
+$ echo u >/proc/sysrq-trigger #umount
+$ echo b >/proc/sysrq-trigger #reboot
+
+# inittab
+* Make sure single user mode prompts for root password
+su:S:wait:/sbin/sulogin /dev/console
+
+* Save inittab file
+$ sudo telinit q
+
+* Not affect root user
+/etc/login.defs
+
+* Modify keymaps (map F9 to F1)
+$ xmodmap -pke | grep F9
+$ xmodmap -e "keycode  75 = F1"
+
+* Map Caps to Control_L
+$ xmodmap -pke | grep Caps
+keycode 66 = Caps_Lock
+$ xmodmap -pke | grep Control
+keycode  37 = Control_L
+keycode 109 = Control_R Multi_key
+$ vim ~/.xmodmaprc
+keycode 66 = Control_L
+
+# /usr/share/kbd/keymaps/i386/qwerty/us.map.gz [0]
+
+$ iconv -f GB18030 -t UTF-8 file > newfile
+$ iconv -f gbk -t utf8 -c infile -o outfile
+
+$ troff -a -mm xx.mm | less
+
+* Convert pdf to png
+$ gs -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=MyFile%02d.png MyFile.pdf
+
+* Turn on numlock by default in /etc/console-tools/config
+    LEDS=+num
+
+$ cal -3
+
+$ sudo usermod -G disk -a ffjia
+
+
+Related Links
+=============
+
+http://www.ducea.com/2006/08/07/how-to-change-the-hostname-of-a-linux-system/
+http://www.linuxfromscratch.org/cgi-bin/lfscounter.cgi
+http://namingschemes.com/Main_Page
+http://en.gentoo-wiki.com/wiki/Screen
+http://www.auscert.org.au/5816
+http://wiki.osuosl.org/display/LNX/Quick+and+dirty+syslog-ng+with+stunnel+howto
+http://www.linuxfromscratch.org/lfs/view/6.5/
+http://en.wikipedia.org/wiki/Magic_SysRq_key
+http://linux.yyz.us/why-software-raid.html
+http://www.cyberciti.biz/tips/linux-audit-files-to-see-who-made-changes-to-a-file.html
+http://www.cyberciti.biz/tips/rhel-centos-fedora-linux-log-failed-login.html
+http://www.science.uva.nl/research/air/wiki/LogicalInterfaceNames
+http://www.kernel.org/pub/linux/libs/pam/Linux-PAM-html/sag-module-reference.html
+http://www.kernel.org/pub/linux/libs/pam/Linux-PAM-html/sag-configuration-file.html
+http://www.ksplice.com/uptrack/using
+http://www.ksplice.com/uptrack/nagios
+http://www.ibm.com/developerworks/linux/tutorials/l-lpic3306/section2.html
+http://www.openprinting.org/printers
+[0] http://www.emacswiki.org/cgi-bin/emacs-en/MovingTheCtrlKey
