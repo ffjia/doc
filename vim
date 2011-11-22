@@ -379,6 +379,10 @@ Tricky Part
 
     :%s/\(\d\+\)pt/\=(submatch(0) + 4).'pt'/g
 
+* Decrease number (in line start with \S) by 1
+
+    :g/^\S\+/s/\d/\=submatch(0)-1/
+
 * Word count
 
     *g*, *CTRL-G*
