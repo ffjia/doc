@@ -271,6 +271,7 @@ Related Links
 
 http://www.caliban.org/bash/index.shtml#completion
 http://samrowe.com/wordpress/advancing-in-the-bash-shell/
+http://wiki.bash-hackers.org/syntax/arrays
 
 
 # vim:filetype=sh:
