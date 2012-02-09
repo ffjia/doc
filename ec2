@@ -19,6 +19,9 @@ $ ec2-describe-group --filter ip-permission.cidr=11.11.11.11/32
 
 $ ec2-authorize Linux --port-range 22 --protocol tcp --cidr "11.11.11.11/32" --cidr "22.22.22.22/32"
 
+# http://docs.amazonwebservices.com/AWSEC2/latest/CommandLineReference/ApiReference-cmd-ImportKeyPair.html
+$ ec2-import-keypair --region $region keyname --public-key-file keyname.ppk
+
 
 Related Links
 =============
