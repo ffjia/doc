@@ -19,6 +19,7 @@
     $ find . -mmin -600 -mmin +60 -type f -exec ls -l '{}' \;
     $ find . -name "*.htm" -exec mv '{}' '{}l' \;
     $ find <PATH> -name <NAME> | xargs -i mv {} <DIR>
+    $ find . -name "foo" | xargs -n 1 /usr/bin/perl -e '($new=$ARGV[0]) =~ s/foo/bar/; system(qq(mv),qq(-v), $ARGV[0], $new);'
     $ find /path/to/files match_rules -exec cp '{}' /path/to/destination \;
     $ find DIR/ -type f ! -name "*.gz" -exec cp -t DEST {} +
     $ find . -iname "*.mp3" -execdir mid3iconv -e GBK {} +
