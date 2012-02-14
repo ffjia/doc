@@ -93,6 +93,22 @@ Warning
     products in order to get TLS to work.
 
 
+Checking certs
+==============
+
+    # Check private key
+    $ openssl rsa -in private.key
+
+    # Check private key
+    $ openssl x509 -in certificate.crt -text -noout
+
+
+Remove a passphrase from private key
+====================================
+
+    $ openssl rsa -in privateKey.pem -out newPrivateKey.pem
+
+
 Related Links
 =============
 
