@@ -1,0 +1,6 @@
+        ========================================
+            MacOS
+        ========================================
+
+# Set HOSTNAME
+$ sudo scutil --set HostName localhost
