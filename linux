@@ -9,6 +9,7 @@ $ lsof -p <PID>
 $ lsof -c <PROCESS>
 
 $ ps u -C Xorg  # Get the UID
+$ ps -C java -o pid --no-headers
 $ ps ejH
 $ ps -eo pid,tid,class,rtprio,ni,pri,psr,pcpu,stat,wchan:14,comm
 $ ps -o etime,time,pcpu,cmd -u ffjia
