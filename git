@@ -15,6 +15,10 @@ $ git read-tree -m -u HEAD
 $ ls
 perl/  ppc/
 
+# Ignore SSL warnings
+env GIT_SSL_NO_VERIFY=true git clone https://github.com/user/repo.git
+env GIT_CURL_VERBOSE=1 git clone https://github.com/user/repo.git
+
 Related Links
 =============
 
