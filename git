@@ -19,6 +19,14 @@ perl/  ppc/
 env GIT_SSL_NO_VERIFY=true git clone https://github.com/user/repo.git
 env GIT_CURL_VERBOSE=1 git clone https://github.com/user/repo.git
 
+# Remove remote tag on GitHub
+# http://wptheming.com/2011/04/add-remove-github-tags/
+1) Delete the v0.4 tag locally: git tag -d v0.4
+2) Delete the v0.4 tag on GitHub (which removes its download link): git push origin :v0.4
+3) Add a new tag for the newest stable release: git tag -a v0.5 -m “Version 0.5 Stable”
+4) Push the latest tag to GitHub (two dashes): git push –tags
+
+
 Related Links
 =============
 
