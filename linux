@@ -13,6 +13,7 @@ $ ps -C java -o pid --no-headers
 $ ps ejH
 $ ps -eo pid,tid,class,rtprio,ni,pri,psr,pcpu,stat,wchan:14,comm
 $ ps -o etime,time,pcpu,cmd -u ffjia
+$ ps -o lstart -p pid --no-heading
 $ ps -eo user,pcpu,pid,cmd | sort -n -r -k2 | head -6
 $ ps -A u --sort -rss
 $ ps -e -o comm= -o %mem= | sort -nrk2 | head
