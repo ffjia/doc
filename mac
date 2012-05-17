@@ -4,3 +4,6 @@
 
 # Set HOSTNAME
 $ sudo scutil --set HostName localhost
+
+# Install RVM
+$ CC=/usr/bin/gcc-4.2 rvm install 1.8.7

@@ -40,6 +40,10 @@ $ git reset --soft HEAD^
 $ fix something
 $ git commit
 
+# Show info about tag
+$ git show -s --format=%s v1.7.5
+$ git cat-file -p v1.7.5
+
 
 Related Links
 =============
