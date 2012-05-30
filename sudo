@@ -1,6 +1,6 @@
-        ======================================== 
+        ========================================
             Sudo
-        ======================================== 
+        ========================================
 
 # $Id: sudo 434 2007-06-24 09:26:06Z ffjia $
 
@@ -28,3 +28,11 @@ $ sudo -s -H
 $ sudo -S <COMMAND> <<EOF
 SECRET_PASSWORD
 EOF
+
+# Redirect output
+$ sudo bash -c "echo foo > bar"
+
+or
+
+$ echo foo | sudo tee bar
+

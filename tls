@@ -84,6 +84,9 @@ Using openssl[2]
 
     $ openssl s_client -host imap.gmail.com -port 993
 
+    # Convert PFX file to PEM file, with private key and certificate.
+    $ openssl pkcs12 -in foo.pfx -out foo.pem
+
 
 Warning
 =======
