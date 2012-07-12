@@ -259,6 +259,20 @@
     - !* is all the arguments
     - !-2, !-3, … are earlier commands
 
+    # Make a directory then move into it
+    $ mkdir cgi-bin; cd !#$ # !#$ is shorthand for "the first word of this command".
+
+    # Execute the most recent command the contains the following string
+    !?string
+
+    # Globally search replace on the previous line:
+    !!:gs/old/new/
+
+    # HEADS AND TAILS
+    # Ever wanted to copy a few files in the same directory, all of which have same
+    # long prefix, like: cp /usr/local/etc/apache/file1.txt /usr/local/etc/apache/file2.txt
+    # you can grap and reuse that prefix. It\'s named !#:1:h like:
+    $ cp /usr/local/etc/apache/file1.txt !#:1:h/file2.txt !#:1:h/file3.txt
 
 * exit_msg() {
       [[ $# -gt 1 ]] && echo "${0##*/} (${1}) - ${2}"
@@ -272,6 +286,7 @@ Related Links
 http://www.caliban.org/bash/index.shtml#completion
 http://samrowe.com/wordpress/advancing-in-the-bash-shell/
 http://wiki.bash-hackers.org/syntax/arrays
+http://mark.stosberg.com/Tech/tips/bash.tips
 
 
 # vim:filetype=sh:

@@ -44,6 +44,15 @@ $ git commit
 $ git show -s --format=%s v1.7.5
 $ git cat-file -p v1.7.5
 
+# Remove tag
+$ git tag -d v1.9.2
+$ git push origin :refs/tags/v1.9.2
+
+$ git log --pretty=oneline v1.8.6...v1.8.7 | grep -o "ENG-[0-9]*"
+
+$ git log --since="2012-07-11 00:00:00" --no-merges
+$ git log --oneline --before={3.weeks.ago} --after={2010-04-18} --no-merges
+
 
 Related Links
 =============

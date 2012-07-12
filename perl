@@ -181,6 +181,15 @@ CPAN
 
     $ perl Makefile.PL PREFIX="/usr/local" LIB="/usr/local/lib/site_perl"
 
+    # Installing packages system-wide [0]
+    $ env PERL_MM_USE_DEFAULT=1 cpan
+    # Answer 'yes' if CPAN asks to configure itself automatically
+    cpan> o conf make_install_make_command '/usr/bin/sudo /usr/bin/make'
+    cpan> o conf mbuild_install_build_command '/usr/bin/sudo ./Build'
+    cpan> o conf prerequisites_policy follow
+    cpan> o conf commit
+    cpan> install Some::Module
+
     # Sites
 
         http://mirrors.xueron.com/CPAN/
@@ -276,5 +285,7 @@ http://cpanratings.perl.org/
 http://cpandeps.cantrell.org.uk/?module=Email%3A%3AMIME
 http://testers.cpan.org/
 http://search.cpan.org/
+[0] http://sipb.mit.edu/doc/cpan/
+
 
 # vim:filetype=perl:
