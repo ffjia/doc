@@ -28,6 +28,9 @@ RPM Packages
     # Print kernel version (for kernel/initramfs name in /boot)
     $ rpm -q --qf '%{version}-%{release}.%{arch}' kernel
 
+    # List all installed packages alphabetically name only [1]
+    $ rpm -qa --queryformat "%{NAME}\n" | sort -fu | more
+
     # http://wiki.qmailtoaster.com/index.php/Vpopmail_-_roaming_users_configuration
     $ rpm -Uvh --replacefiles --replacepkgs vpopmail-toaster*.rpm
 
@@ -106,3 +109,4 @@ https://fedoraproject.org/wiki/Flash#32_bit_wrapped_version
 http://fedoraproject.org/wiki/YumUpgradeFaq
 http://fedoraproject.org/wiki/EPEL/FAQ#howtouse
 [0] http://geek.co.il/wp/2010/02/12/upgrading-centos-5-to-fedora-12
+[1] http://www.how2centos.com/cheat-sheet/

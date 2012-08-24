@@ -34,5 +34,5 @@ $ sudo bash -c "echo foo > bar"
 
 or
 
-$ echo foo | sudo tee bar
+$ echo foo | sudo tee [-a] bar
 

@@ -274,10 +274,25 @@
     # you can grap and reuse that prefix. It\'s named !#:1:h like:
     $ cp /usr/local/etc/apache/file1.txt !#:1:h/file2.txt !#:1:h/file3.txt
 
+
 * exit_msg() {
       [[ $# -gt 1 ]] && echo "${0##*/} (${1}) - ${2}"
       exit ${1:-0}
   }
+
+
+* Color output [0]
+
+txtund=$(tput sgr 0 1)          # Underline
+txtbld=$(tput bold)             # Bold
+bldred=${txtbld}$(tput setaf 1) #  red
+bldblu=${txtbld}$(tput setaf 4) #  blue
+bldwht=${txtbld}$(tput setaf 7) #  white
+txtrst=$(tput sgr0)             # Reset
+info=${bldwht}*${txtrst}        # Feedback
+pass=${bldblu}*${txtrst}
+warn=${bldred}*${txtrst}
+ques=${bldblu}?${txtrst}
 
 
 Related Links
@@ -287,6 +302,7 @@ http://www.caliban.org/bash/index.shtml#completion
 http://samrowe.com/wordpress/advancing-in-the-bash-shell/
 http://wiki.bash-hackers.org/syntax/arrays
 http://mark.stosberg.com/Tech/tips/bash.tips
+[0] http://linuxtidbits.wordpress.com/2008/08/11/output-color-on-bash-scripts/
 
 
 # vim:filetype=sh:

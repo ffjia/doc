@@ -446,6 +446,8 @@
         $ sar -d
         $ sar -f /var/adm/sa/sa22 -s 14:20 -e 15:00 -w -q -i 4
 
+        $ sar -e 12:30:00 -s 07:00:00 -w
+
     fish
 
     command-not-found
