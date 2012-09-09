@@ -26,6 +26,15 @@ env GIT_CURL_VERBOSE=1 git clone https://github.com/user/repo.git
 3) Add a new tag for the newest stable release: git tag -a v0.5 -m “Version 0.5 Stable”
 4) Push the latest tag to GitHub (two dashes): git push –tags
 
+
+Remove .DS_Store [0]
+================
+
+$ find . -name .DS_Store -print0 | xargs -0 git rm --ignore-unmatch
+$ git config --global core.excludesfile ~/.gitignore
+$ echo .DS_Store >> ~/.gitignore
+
+
 How to fix mistakes
 ===================
 
@@ -59,3 +68,6 @@ Related Links
 
 http://book.git-scm.com/4_undoing_in_git_-_reset,_checkout_and_revert.html
 http://gitready.com/intermediate/2009/03/04/pick-out-individual-commits.html
+http://cheat.errtheblog.com/s/git/
+http://ariejan.net/2009/10/26/how-to-create-and-apply-a-patch-with-git/
+[0] http://hints.binaryage.com/how-to-remove-ds-store-files-from-a-git-repo/
