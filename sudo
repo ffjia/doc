@@ -36,3 +36,6 @@ or
 
 $ echo foo | sudo tee [-a] bar
 
+# Run script vis ssh
+$ ssh -t $i 'sudo bash -s' < /path/to/script.sh
+

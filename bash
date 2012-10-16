@@ -295,6 +295,12 @@ warn=${bldred}*${txtrst}
 ques=${bldblu}?${txtrst}
 
 
+* Misc
+
+# Remove bash command line history
+$ export HISTSIZE=0
+
+
 Related Links
 =============
 

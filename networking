@@ -76,6 +76,8 @@ Port scan
     # Scan port 21 through 80
     $ nmap -p 21-80
 
+    $ sudo nmap -sU -p 161 localhost
+
     $ nmap -v
     $ nmap -v -P0
     $ sudo nmap -v -P0 -p21 -A
