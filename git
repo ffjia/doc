@@ -62,6 +62,8 @@ $ git log --pretty=oneline v1.8.6...v1.8.7 | grep -o "ENG-[0-9]*"
 $ git log --since="2012-07-11 00:00:00" --no-merges
 $ git log --oneline --before={3.weeks.ago} --after={2010-04-18} --no-merges
 
+$ git stash show -p stash@{0}
+
 
 Related Links
 =============
