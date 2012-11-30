@@ -89,6 +89,10 @@ One liner
     $ awk '$9 == 500 { print $0}' /opt/nginx/logs/access.log
     $ ssh remote_host "awk '\$9 ~ /5[0-9][0-9]/ {print \$0}' /opt/nginx/logs/access.log"
 
+* Print PID of Firefox
+
+    $ ps aux | awk '{ if (match($11, /^\/Applications\/.*firefox/)) print $2 }'
+
 
 Related Links
 =============

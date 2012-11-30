@@ -20,6 +20,7 @@ $ ps -e -o comm= -o %mem= | sort -nrk2 | head
 $ ps -e -o pid,args --forest
 $ ps -p 1,2
 $ ps -fp $SSH_AGENT_PID
+$ ps -p the_process_id -o "%t"
 
 $ strace stardict >& log
 $ strace firefox 2>&1 | grep font
@@ -80,6 +81,10 @@ $ screen -d -m sh -c "while true; do arping -c 2 192.168.161.1; sleep 5; done"
 $ mkfifo pipe.wav
 $ screen -d -m mplayer ... -ao pcm:file=pipe.wav
 $ screen -m lame ... pipe.wav pipe.mp3
+
+# Solve Cannot open your terminal ‘/dev/pts/x' error
+$ script /dev/null
+$ screen ...
 
 $ mac <SAMPLE.ape> /dev/stdout -d | lame -h -V - -> <SAMPLE.mp3>
 

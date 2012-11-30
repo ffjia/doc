@@ -308,6 +308,7 @@ http://www.caliban.org/bash/index.shtml#completion
 http://samrowe.com/wordpress/advancing-in-the-bash-shell/
 http://wiki.bash-hackers.org/syntax/arrays
 http://mark.stosberg.com/Tech/tips/bash.tips
+http://tldp.org/LDP/abs/html/io-redirection.html
 [0] http://linuxtidbits.wordpress.com/2008/08/11/output-color-on-bash-scripts/
 
 
