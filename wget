@@ -1,6 +1,6 @@
-        ======================================== 
+        ========================================
             wget
-        ======================================== 
+        ========================================
 
 # $Id: wget 289 2007-02-08 11:15:02Z ffjia $
 
@@ -18,3 +18,15 @@ Useful tricks
 
 
     $ wget --spider -S http://abel.ee.ucla.edu/download-2.4-win32.php
+
+
+* Mirror Puppet repo
+
+    $ wget --exclude-directories=/el/5/products/SRPMS \
+         --exclude-directories=/el/5/dependencies/SRPMS \
+         --exclude-directories=/el/5/products/i386/repodata \
+         --exclude-directories=/el/5/products/x86_64/repodata \
+         --exclude-directories=/el/5/dependencies/i386/repodata \
+         --exclude-directories=/el/5/dependencies/x86_64/repodata \
+         --accept rpm --no-host-directories --cut-dirs=1 \
+      --no-parent --mirror http://yum.puppetlabs.com/el/5
