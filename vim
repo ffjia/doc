@@ -387,6 +387,12 @@ Tricky Part
 
     *g*, *CTRL-G*
 
+* Merge lines [0]
+
+    Cursor is located on the line immediately preceding the first line of the second block
+
+    :g/^/''+m.|-j
+
 * Word used for how many times
 
     :%s/word/&/gn
@@ -499,6 +505,7 @@ VIM 7
 Related Links
 =============
 
+[0] http://stackoverflow.com/questions/10760326/merge-multiple-lines-two-blocks-in-vim
 http://www.viemu.com/a_vi_vim_graphical_cheat_sheet_tutorial.html
 http://cscope.sourceforge.net/cscope_vim_tutorial.html
 http://www.linuxjournal.com/article/8289

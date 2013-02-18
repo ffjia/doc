@@ -44,6 +44,9 @@ $ git revert "commit hash"
 # Re-edit commit message
 $ git commit --amend
 
+# or
+$ git commit --amend -m "New commit message"
+
 # Fix last commit
 $ git reset --soft HEAD^
 $ fix something

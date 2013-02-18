@@ -77,6 +77,8 @@ YUM
 
     $ yum install yum-presto
 
+    $ yum deplist redhat-lsb
+
     $ yum --nogpgcheck localinstall /media/cdrom/CentOS/RPMS/postgresql-7*
 
     $ yum --enablerepo=centosplus upgrade php*
