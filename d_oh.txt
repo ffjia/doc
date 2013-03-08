@@ -166,6 +166,9 @@
 * Sometimes the best way to get to know something is just to stick your hands
   under the hood and get 'em dirty -- with a little guidance, of course.
 
+* I was banging my head against the wall trying to figure out why my passive
+  connections were hanging.
+
 
 ==============================================================================
 

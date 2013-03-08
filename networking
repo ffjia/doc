@@ -129,10 +129,14 @@ FTP
     bye
     END
 
-
     * fxp via lftp
     put ftp://A/file -o ftp://B/file
     get ftp://A/file -o ftp://B/file
+
+    # In your /etc/vsftpd.conf add:
+    pasv_min_port=10000
+    pasv_max_port=10024
+    pasv_address=public_ip
 
 
 DNS

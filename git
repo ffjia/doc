@@ -27,6 +27,15 @@ env GIT_CURL_VERBOSE=1 git clone https://github.com/user/repo.git
 4) Push the latest tag to GitHub (two dashes): git push –tags
 
 
+Remote branches
+================
+
+$ git push origin yourbranch
+
+$ git push origin --delete yourbranch
+$ git branch -d yourbranch
+
+
 Remove .DS_Store [0]
 ================
 
