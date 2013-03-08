@@ -106,6 +106,22 @@ Checking certs
     $ openssl x509 -in certificate.crt -text -noout
 
 
+Verify certs
+============
+
+    $ openssl rsa -noout -modulus -in my_domain.key | openssl md5
+    5df2236aed05201fc98d93b994bc9c17
+
+    $ openssl req -noout -modulus -in my_domain.csr | openssl md5
+    5df2236aed05201fc98d93b994bc9c17
+
+    $ openssl x509 -noout -modulus -in my_domain.crt | openssl md5
+    5df2236aed05201fc98d93b994bc9c17
+
+    $ openssl verify -verbose -CAfile my_domain-bundle.crt my_domain.crt
+    my_domain.crt: OK
+
+
 Remove a passphrase from private key
 ====================================
 
