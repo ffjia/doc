@@ -357,6 +357,10 @@ Various
 
         *ga*
 
+    - Make non-greedy match
+
+        instead of `.*' use `.\{-}'
+
 
 Tricky Part
 ===========
