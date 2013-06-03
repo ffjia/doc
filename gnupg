@@ -37,7 +37,7 @@ About deleting UIDs
     Sure it is.  It has *exactly* the effect of removing the UID.  The
     UID remains, but is clearly marked as being revoked.  This should
     tell everyone that the UID is no longer to be associated with the
-    key.  This is The Correct Way to remove stale UIDs AFAIK.
+    key. This is The Correct Way to remove stale UIDs AFAIK.
 
     Stephen
 
@@ -145,7 +145,22 @@ Do interactive job
 Do not add keys to default keyrings
 ==================================
 
-    $ gpg --no-default-keyring --keyring trustedkeys.gpg  --import RPM-GPG-KEY-percona
+    $ gpg --no-default-keyring --keyring trustedkeys.gpg --import RPM-GPG-KEY-percona
+
+
+Revoke
+=======
+
+    $ gpg --import .revoke.asc
+    gpg: key B595FC37: "Feifei Jia <feifei.j@gmail.com>" revocation certificate imported
+    gpg: Total number processed: 1
+    gpg:    new key revocations: 1
+    gpg: 3 marginal(s) needed, 1 complete(s) needed, PGP trust model
+    gpg: depth: 0  valid:   2  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 2u
+    $ gpg --send-keys B595FC37
+    gpg: sending key B595FC37 to hkp server subkeys.pgp.net
+    $ gpg --keyserver pgp.mit.edu --send-keys B595FC37
+    gpg: sending key B595FC37 to hkp server pgp.mit.edu
 
 
 Related Links
@@ -153,7 +168,7 @@ Related Links
 
 http://wiki.debian.org.tw/index.php/PGPKeysigningParty
 http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x<KEYID>
-http://pgp.mit.edu:11371/pks/lookup?op=get&search=0xB595FC37
+http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x13A12FC1
 http://lists.gnupg.org/pipermail/gnupg-users/2001-September/010161.html
 
 
