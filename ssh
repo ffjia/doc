@@ -59,6 +59,14 @@ Uesful Tricks
 
     $ ssh-keygen -t dsa -N '' -f ~/.ssh/id_dsa
 
+* Show fingerpirnt of public key
+
+    $ ssh-keygen -lf ~/.ssh/id_dsa.pub
+
+* Read private file and put public file to stdout
+
+    $ ssh-keygen -y -f my_private.key
+
 * Make SSH access more secure
 
     # /etc/pam.d/sshd

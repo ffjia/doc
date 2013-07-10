@@ -10,3 +10,12 @@ $ CC=/usr/bin/gcc-4.2 rvm install 1.8.7
 
 # Flush DNS cache
 $ dscacheutil -flushcache
+
+# Add user to a group
+$ sudo dseditgroup -o edit -a ffjia -t user wheel
+
+
+Related Links
+=============
+
+http://prasanthj86.blogspot.com/2011/11/mac-os-x-adding-user-groups-and.html

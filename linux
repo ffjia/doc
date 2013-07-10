@@ -18,9 +18,11 @@ $ ps -eo user,pcpu,pid,cmd | sort -n -r -k2 | head -6
 $ ps -A u --sort -rss
 $ ps -e -o comm= -o %mem= | sort -nrk2 | head
 $ ps -e -o pid,args --forest
+$ ps -o pid,tty,cmd
 $ ps -p 1,2
 $ ps -fp $SSH_AGENT_PID
 $ ps -p the_process_id -o "%t"
+$ ps aux | awk '{ print $8 " " $2  " " $11}' | grep -w Z
 
 $ strace stardict >& log
 $ strace firefox 2>&1 | grep font
