@@ -342,6 +342,11 @@ Change
 
         :%s/\<\(\u\)\(\u\+\)\>/\1\L\2/g
 
+    - Join [count] lines, with a minimum of two lines, Don't insert or remove
+      any spaces. [1]
+
+        *gJ*
+
 * Change string position
 
     Doe, John -> John Doe
@@ -510,6 +515,7 @@ Related Links
 =============
 
 [0] http://stackoverflow.com/questions/10760326/merge-multiple-lines-two-blocks-in-vim
+[1] http://stackoverflow.com/questions/1578951/why-does-vim-add-spaces-when-joining-lines
 http://www.viemu.com/a_vi_vim_graphical_cheat_sheet_tutorial.html
 http://cscope.sourceforge.net/cscope_vim_tutorial.html
 http://www.linuxjournal.com/article/8289

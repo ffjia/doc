@@ -166,6 +166,7 @@ Revoke
 Related Links
 =============
 
+https://help.ubuntu.com/community/GnuPrivacyGuardHowto
 http://wiki.debian.org.tw/index.php/PGPKeysigningParty
 http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x<KEYID>
 http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x13A12FC1
