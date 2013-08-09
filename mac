@@ -14,6 +14,11 @@ $ dscacheutil -flushcache
 # Add user to a group
 $ sudo dseditgroup -o edit -a ffjia -t user wheel
 
+# Reset password using Recovery
+1. Shut down your Mac and turn it back on while holding down the `Command + R' keys at the same time until you see the Lion Recovery screen.
+2. From the menu bar at the top, select `Utilities > Terminal'.
+3. In the Terminal window type `resetpassword' and press Enter.
+
 
 Related Links
 =============

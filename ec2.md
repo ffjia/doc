@@ -22,6 +22,7 @@
     $ ec2-get-password --region ap-southeast-1 i-xxxxxxxx -k .ec2-keys/keypair.pem
 
     $ ec2-run-instances ami-xxxxxxxx --region us-east-1 --instance-type m1.small --key mykey --group group1 --group group2 --availability-zone us-east-1c --block-device-mapping /dev/sda1=:30 --instance-count 1
+    $ ec2-run-instances -b '/dev/sdb=ephemeral0' -b '/dev/sdc=ephemeral1'
 
     $ ec2-describe-group --filter ip-permission.cidr=11.11.11.11/32
 
