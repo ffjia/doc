@@ -44,6 +44,12 @@ $ git config --global core.excludesfile ~/.gitignore
 $ echo .DS_Store >> ~/.gitignore
 
 
+Archive
+=======
+
+$ git archive --format=tar.gz --output=/path/to/file-`date +%Y%m%d`.tar.gz HEAD
+
+
 How to fix mistakes
 ===================
 

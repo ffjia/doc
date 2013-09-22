@@ -300,6 +300,9 @@ ques=${bldblu}?${txtrst}
 # Remove bash command line history
 $ export HISTSIZE=0
 
+# redirect and append both stdout and stderr, bash 4.0
+$ cmd &>> outfile
+
 
 Related Links
 =============

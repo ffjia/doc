@@ -34,6 +34,12 @@ Create cert
     $ openssl gendh -rand /etc/ssl/ssl.rand 512 >> cert.pem
     $ openssl gendh -rand /etc/ssl/ssl.rand 512 >> key.pem
 
+    C.
+
+    $ openssl genrsa -des3 -out private.key 2048
+    $ openssl req –new –key private.key -out private.csr
+    $ openssl req -text -noout -verify -in private.csr
+
 
 Use fetchmail with gmail [1]
 ========================
@@ -117,6 +123,8 @@ Verify certs
 
     $ openssl x509 -noout -modulus -in my_domain.crt | openssl md5
     5df2236aed05201fc98d93b994bc9c17
+
+    $ openssl s_client -connect ldap.domain.tld:636 | openssl x509 -noout -text
 
     $ openssl verify -verbose -CAfile my_domain-bundle.crt my_domain.crt
     my_domain.crt: OK
