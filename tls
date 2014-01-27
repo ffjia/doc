@@ -66,8 +66,9 @@ Make a cert against SMTP server
 ===============================
 
     #Show cert
-    $ openssl s_client -connect mail2.sw-linux.com:443 -showcerts
-    $ openssl s_client -starttls smtp -connect mail.webterren.com:587 < /dev/null | openssl x509 >| cert.pem
+    $ openssl s_client -connect mail2.domain.com:443 -showcerts
+    $ openssl s_client -starttls smtp -connect mail.domain.com:587 < /dev/null | openssl x509 >| cert.pem
+    $ openssl s_client -connect mail.domain.com:443 -showcerts < /dev/null | openssl x509 -outform PEM > mycertfile
 
     #Create fingerprint
     $ openssl x509 -in .certs/gmail.pem -noout -fingerprint
