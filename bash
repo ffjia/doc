@@ -89,10 +89,6 @@
 
     ${FILENAME##*.}
 
-* The first letter of a variable
-
-    ${VAR:0:1}
-
 * The last letter of a variable
 
     ${VAR: -1}
@@ -102,25 +98,30 @@
     ${VAR:1:${#VAR}-2}
 
 
-* Get the var length
-
-    ${#VAR}
-
-
 * The last positional parameter
 
     ${!#}
+
+
+* Parameter substitution
+
+    ${parameter:-defaultValue}	# Get default shell variables value
+    ${parameter:=defaultValue}	# Set default shell variables value
+    ${parameter:?"Error Message"}	# Display an error message if parameter is not set
+    ${#var}	# Find the length of the string
+    ${var%pattern}	# Remove from shortest rear (end) pattern
+    ${var%%pattern}	# Remove from longest rear (end) pattern
+    ${var:num1:num2}	# Substring
+    ${var#pattern}	# Remove from shortest front pattern
+    ${var##pattern}	# Remove from longest front pattern
+    ${var/pattern/string}	# Find and replace (only replace first occurrence)
+    ${var//pattern/string}	# Find and replace all occurrences
 
 
 * Parameter expansion -> Indirection
 
     read -p "Which variable do you want to inspect? " look_var
     echo "The value of \"$look_var\" is: \"${!look_var}\""
-
-
-* Copy file with extension (bak)
-
-    $ cp <FOOBAR>{,.bak}
 
 
 * Remove space(s) in file name

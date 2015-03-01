@@ -93,6 +93,10 @@ One liner
 
     $ ps aux | awk '{ if (match($11, /^\/Applications\/.*firefox/)) print $2 }'
 
+* Remove char appears more than x times
+
+    $ awk 'gsub(/char/,"&")<*count*'
+
 
 Related Links
 =============

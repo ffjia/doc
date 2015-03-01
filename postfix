@@ -22,6 +22,8 @@ Postconf
 
     $ postconf mail_version
 
+    $ postconf message_size_limit
+
 
 Delete mail from mailq
 ======================

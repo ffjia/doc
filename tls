@@ -109,7 +109,7 @@ Checking certs
     # Check private key
     $ openssl rsa -in private.key
 
-    # Check private key
+    # Check certificate
     $ openssl x509 -in certificate.crt -text -noout
 
 
@@ -143,6 +143,7 @@ Related Links
 http://curl.haxx.se/docs/sslcerts.html
 http://curl.haxx.se/docs/caextract.html
 http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=444176
+https://www.sslshopper.com/article-most-common-openssl-commands.html
 
 [1] https://mail.google.com/support/bin/answer.py?answer=13287
 [2] https://www.ibm.com/developerworks/cn/linux/l-cn-sclient/

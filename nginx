@@ -8,3 +8,4 @@ Related Links
 
 http://openresty.org/download/agentzh-nginx-tutorials-en.html
 http://articles.slicehost.com/2010/8/27/customizing-nginx-web-logs
+http://nginx.org/en/docs/http/ngx_http_core_module.html#var_uri

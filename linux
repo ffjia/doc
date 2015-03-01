@@ -144,6 +144,9 @@ $ sudo telinit q
 * Not affect root user
 /etc/login.defs
 
+# The helper never touches home directories if they already exist.
+$ mkhomedir_helper user
+
 * Modify keymaps (map F9 to F1)
 $ xmodmap -pke | grep F9
 $ xmodmap -e "keycode  75 = F1"
@@ -173,6 +176,19 @@ $ gs -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=MyFile%02d.png MyFile.pdf
 $ cal -3
 
 $ sudo usermod -G disk -a ffjia
+$ sudo gpasswd -d ffjia disk
+
+$ sudo pkill -u username
+$ sudo killall -u username -m .
+
+$ sudo fuser -km /mnt
+
+# View Lib info
+$ readelf -d  /path/to/library.so | grep SONAME
+
+# Run task every other week
+# https://coderwall.com/p/yzzu5a
+0 10 * * 1 [ `expr \`date +\%s\` / 86400 \% 2` -eq 1 ] && <my command>
 
 
 Related Links

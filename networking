@@ -150,6 +150,10 @@ DNS
 
     $ host -t mx <HOSTNAME>
 
+* Show TTL
+
+    $ dig +trace +nocmd +noall +answer +ttlid domain.tld
+
 
 Network class
 =============

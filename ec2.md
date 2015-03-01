@@ -33,3 +33,5 @@
 ## Related Links
 
 http://docs.amazonwebservices.com/AWSEC2/latest/CommandLineReference/
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Filtering.html
+http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-volumes.html

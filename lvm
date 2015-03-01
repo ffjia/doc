@@ -105,8 +105,12 @@ fi
 
     $ sudo lvcreate -n lv -l 100%FREE vg
 
+    $ sudo lvcreate -i2 -I256 -n lv2 -l 100%FREE /dev/pgbackup-vg1
+
     $ sudo lvscan
     $ sudo lvdisplay
+    $ sudo lvs -a -o+devices
+    $ sudo lvs --segments
 
     $ sudo lvremove <LV> [<LV>...]
 
@@ -114,6 +118,17 @@ fi
     $ sudo lvextend -L +1G /dev/lvmxen/domu
     #$ sudo resize_reiserfs -s+1G -f /dev/lvmxen/domu
     $ sudo resize_reiserfs /dev/lvmxen/domu
+    # XFS
+    $ sudo xfs_growfs /var/lib/postgresql
+        meta-data=/dev/mapper/pgbackup--vg1-lv1 isize=256    agcount=4, agsize=60397568 blks
+                 =                       sectsz=512   attr=2
+        data     =                       bsize=4096   blocks=241590272, imaxpct=25
+                 =                       sunit=0      swidth=0 blks
+        naming   =version 2              bsize=4096   ascii-ci=0
+        log      =internal               bsize=4096   blocks=117964, version=2
+                 =                       sectsz=512   sunit=0 blks, lazy-count=1
+        realtime =none                   extsz=4096   blocks=0, rtextents=0
+        data blocks changed from 241590272 to 451305472
     # ext3 filesystem
     #$ sudo resize2fs /dev/lvmxen/domu 5G
 
@@ -125,6 +140,7 @@ fi
     # Shrink an LV with a ReiserFS
     $ sudo umount </MOUNTPOINT_OF_LV>
     $ sudo resize_reiserfs −s−768M </DEV/VG_NAME/LV_NAME>
+    $ sudo resize2fs -p /dev/mapper/vg-data-mysql-data_lv 100G
     $ sudo lvreduce -L <SIZE> </DEV/VG_NAME/LV_NAME>
     $ sudo mount </DEV/VG_NAME/LV_NAME> </MOUNTPOINT_OF_LV>
 

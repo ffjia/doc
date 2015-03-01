@@ -57,7 +57,7 @@ Uesful Tricks
 
 * Create passwordless pubkey
 
-    $ ssh-keygen -t dsa -N '' -f ~/.ssh/id_dsa
+    $ ssh-keygen -t rsa -b 2048 -N '' -f ~/.ssh/id_rsa
 
 * Show fingerpirnt of public key
 
@@ -66,6 +66,10 @@ Uesful Tricks
 * Read private file and put public file to stdout
 
     $ ssh-keygen -y -f my_private.key
+
+* Remove ECDSA key
+
+    $ sh-keygen -f ~/.ssh/known_hosts -R host
 
 * Make SSH access more secure
 
@@ -91,6 +95,10 @@ Uesful Tricks
     Add "command="/bin/false",no-X11-forwarding,no-agent-forwarding,no-pty" in the
     head of ~/.ssh/authorized_keys file
 
+* Retrieve SSH fingerprint
+
+    $ ssh-keygen -lf /path/to/ssh/key
+
 
 Related Links
 =============
@@ -103,3 +111,4 @@ http://wiki.mandriva.com/en/Docs/SysAdmin/Networking/SSH
 http://www.eng.cam.ac.uk/help/jpmg/ssh/authorized_keys_howto.html
 http://www.ibm.com/developerworks/cn/aix/library/au-sshlocks/
 http://blogs.perl.org/users/smylers/2011/08/ssh-productivity-tips.html
+http://www.snailbook.com/faq/restricted-scp.auto.html

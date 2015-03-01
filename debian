@@ -39,7 +39,11 @@ APT
     $ sudo apt-get -f install
     $ sudo dpkg --configure -a
 
+    $ sudo apt-get install -qq --reinstall --print-uris libpq5 [2]
+
     $ sudo apt-get -o Debug::pkgProblemResolver=yes dist-upgrade
+
+    $ sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
 
     # Install packages in "Build-Depends"
     $ apt-get build-dep <PACKAGE>
@@ -89,6 +93,8 @@ Aptitude
     $ aptitude install nvidia-glx/experimental
     $ aptitude install nvidia-glx=1.0.9631-1
 
+    $ aptitude -y safe-upgrade <package list>
+
 
 Apt-p2p
 =======
@@ -114,6 +120,8 @@ Apt-cache
     $ apt-cache showpkg <PACKAGE>
     $ apt-cache depends <PACKAGE>
     $ apt-cache stats <PACKAGE>
+    $ apt-cache policy <PACKAGE>
+    $ apt-cache madison <PACKAGE>
 
     $ apt-cache show mawk | grep "Provides\|Priority"
 
@@ -211,3 +219,4 @@ http://www.debianadmin.com/step-by-step-tutorial-howto-compile-kernel-in-debian-
 http://blog.bwysystems.com/bwysystems/?p=10
 [0] http://www.ubuntugeek.com/how-to-use-apt-p2p-for-faster-upgrades-from-ubuntu-intrepid-810-to-jaunty-904.html
 [1] http://it.slashdot.org/comments.pl?sid=1196205&cid=27548025
+[2] http://linuxers.org/article/find-download-location-urlname-size-and-md5-sum-software-package-using-apt-get
