@@ -19,8 +19,12 @@ $ sudo dseditgroup -o edit -a ffjia -t user wheel
 2. From the menu bar at the top, select `Utilities > Terminal'.
 3. In the Terminal window type `resetpassword' and press Enter.
 
+# Disable app bounce notification [0]
+$ defaults write com.apple.dock no-bouncing -bool TRUE && killall -HUP Dock
+
 
 Related Links
 =============
 
 http://prasanthj86.blogspot.com/2011/11/mac-os-x-adding-user-groups-and.html
+[0] https://apple.stackexchange.com/questions/121017/how-to-disable-notification-for-terminal-app
